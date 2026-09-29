@@ -1,0 +1,101 @@
+.qb-wrapper { font-family: 'Inter', system-ui, sans-serif; background: #f8fafc; min-height: 100vh; }
+.filter-card, .main-table-card { background: #fff; border-radius: 12px; box-shadow: 0 4px 20px -2px rgba(16,24,40,0.05); }
+.main-table-card { overflow: visible !important; }
+.form-label-custom { font-size: 0.78rem; font-weight: 600; text-transform: uppercase; color: #64748b; margin-bottom: 6px; }
+.custom-select-sm { font-size: 0.88rem; border-radius: 8px; border: 1px solid #e2e8f0; padding: 0.45rem 0.85rem; }
+.btn-primary-custom { background: #2563eb; color: #fff; border: none; border-radius: 8px; padding: 0.5rem 1.25rem; font-weight: 600; font-size: 0.88rem; transition: 0.2s; }
+.btn-primary-custom:hover { background: #1d4ed8; }
+.modern-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+.modern-table thead th { background: #f8fafc; color: #64748b; font-size: 0.74rem; font-weight: 700; text-transform: uppercase; padding: 1rem 0.75rem; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
+.modern-table tbody td { padding: 0.9rem 0.75rem; vertical-align: middle; border-bottom: 1px solid #f1f5f9; font-size: 0.88rem; }
+.table-row-hover:hover { background: #f1f5f9 !important; }
+.badge-course { background: #f1f5f9; color: #334155; font-weight: 600; font-size: 0.76rem; padding: 0.25rem 0.6rem; border-radius: 6px; border: 1px solid #e2e8f0; }
+.badge-topic { background: #eff6ff; color: #1d4ed8; font-weight: 600; font-size: 0.76rem; padding: 0.25rem 0.65rem; border-radius: 6px; border: 1px solid #bfdbfe; }
+.badge-level { font-size: 0.76rem; font-weight: 600; color: #64748b; background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.2rem 0.5rem; border-radius: 6px; }
+.question-text { max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #334155; }
+.status-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 0.75rem; font-weight: 600; padding: 0.28rem 0.75rem; border-radius: 20px; }
+.status-dot-pulse { width: 6px; height: 6px; border-radius: 50%; }
+.status-active { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+.status-active .status-dot-pulse { background: #10b981; }
+.status-deactive { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+.status-deactive .status-dot-pulse { background: #ef4444; }
+.action-btn-group { display: inline-flex; gap: 6px; }
+.btn-action { border: 1px solid #e2e8f0; background: #fff; font-size: 0.78rem; font-weight: 600; padding: 0.3rem 0.75rem; border-radius: 6px; cursor: pointer; }
+.btn-view:hover { background: #f1f5f9; }
+.btn-modify { color: #2563eb; border-color: #bfdbfe; background: #eff6ff; }
+.btn-modify:hover { background: #2563eb; color: #fff; }
+.dropdown-wrapper { position: relative; display: inline-block; }
+.status-filter-toggle { background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0.25rem 0.6rem; font-size: 0.74rem; font-weight: 700; color: #334155; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.status-indicator-dot, .status-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+.dropdown-arrow { font-size: 0.6rem; color: #64748b; }
+.custom-status-menu { position: absolute; top: calc(100% + 4px); left: 0; z-index: 9999; background: #fff; border-radius: 8px; min-width: 160px; padding: 6px 0; margin: 0; list-style: none; border: 1px solid #e2e8f0; }
+.menu-item-btn { width: 100%; text-align: left; background: transparent; border: none; padding: 0.45rem 1rem; font-size: 0.8rem; color: #334155; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.menu-item-btn:hover, .menu-item-btn.active-item { background: #eff6ff; color: #1d4ed8; font-weight: 600; }
+.pagination-custom .page-link { border-radius: 6px; border: 1px solid #e2e8f0; color: #475569; font-size: 0.8rem; font-weight: 600; padding: 0.35rem 0.75rem; }
+.pagination-custom .page-item.active .page-link { background: #2563eb; border-color: #2563eb; color: #fff; }
+/* 1. Course ID Badge (Light Blue Background with Darker Blue Text) */
+.badge-course {
+  background-color: #dbeafe !important; /* Soft light blue */
+  color: #1d4ed8 !important;            /* Bold vibrant blue */
+  font-weight: 700 !important;
+  font-size: 0.78rem !important;
+  padding: 0.25rem 0.65rem !important;
+  border-radius: 6px !important;
+  border: 1px solid #bfdbfe !important;
+  display: inline-block !important;
+  letter-spacing: 0.3px;
+}
+
+/* 2. View Button (Light Blue Button with Blue Text & Icon) */
+.btn-view {
+  background-color: #dbeafe !important; /* Light blue matching screenshot */
+  color: #2563eb !important;            /* Blue text */
+  border: 1px solid #bfdbfe !important;
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  padding: 0.3rem 0.8rem !important;
+  border-radius: 6px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn-view:hover {
+  background-color: #bfdbfe !important;
+  border-color: #93c5fd !important;
+  color: #1d4ed8 !important;
+}
+/* Table Header - Dark Navy Blue Theme matching reference UI */
+.modern-table thead th {
+  background-color: #1e293b !important; /* Dark Navy/Slate Blue */
+  color: #f8fafc !important;            /* Clean White Text */
+  font-size: 0.76rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  padding: 1rem 0.75rem !important;
+  border-bottom: none !important;
+  vertical-align: middle !important;
+}
+
+/* Header Text Title */
+.th-title {
+  color: #f8fafc !important;
+}
+
+/* Status Filter Toggle Button inside Table Header */
+.status-filter-toggle {
+  background-color: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 6px !important;
+  padding: 0.25rem 0.6rem !important;
+  font-size: 0.74rem !important;
+  font-weight: 700 !important;
+  color: #1e293b !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  cursor: pointer !important;
+}

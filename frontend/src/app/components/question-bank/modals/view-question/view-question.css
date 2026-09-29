@@ -1,0 +1,11 @@
+.option-box {
+  background-color: #ffffff;
+  transition: all 0.2s ease-in-out;
+}
+
+.option-correct {
+  background-color: #ecfdf5 !important;
+  border-color: #10b981 !important;
+  border-width: 2px !important;
+  font-weight: 600;
+}

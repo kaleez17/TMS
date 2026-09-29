@@ -1,0 +1,120 @@
+<div class="qb-wrapper p-4">
+  <!-- Controls -->
+  <div class="card filter-card mb-4 border-0">
+    <div class="card-body p-3">
+      <div class="row g-3 align-items-end">
+        <div class="col-lg-3 col-md-6">
+          <label class="form-label-custom">Course</label>
+          <select class="form-select custom-select-sm" [(ngModel)]="selectedCourseId" (change)="onCourseChange()">
+            <option value="">  All Courses </option>
+            <option *ngFor="let c of courses" [value]="c.id">{{ c.id }}  {{ c.tech }}</option>
+          </select>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <label class="form-label-custom">Course No</label>
+          <select class="form-select custom-select-sm" [(ngModel)]="selectedCourseNo" (change)="onCourseNoChange()" [disabled]="!selectedCourseId">
+            <option value="">Course No</option>
+            <option *ngFor="let cd of courseDetails" [value]="cd.courseDetId">{{ cd.courseDetId }}  {{ cd.tech }}</option>
+          </select>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <label class="form-label-custom">Question No</label>
+          <select class="form-select custom-select-sm" [(ngModel)]="selectedQuestionNo" (change)="onQuestionNoChange()" [disabled]="!selectedCourseNo">
+            <option value=""> All Questions </option>
+            <option *ngFor="let qNo of questionNumbers" [value]="qNo">Question {{ qNo }}</option>
+          </select>
+        </div>
+        <div class="col-lg-3 col-md-6 text-lg-end">
+          <button class="btn btn-primary-custom w-100 w-lg-auto" (click)="openNew()">+ New Question</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="card main-table-card border-0">
+    <div class="table-responsive" style="overflow: visible;">
+      <table class="table modern-table mb-0">
+        <thead>
+          <tr>
+            <th class="ps-4" style="width: 85px;">Q.No</th>
+            <th style="width: 100px;">Course</th>
+            <th style="width: 85px;">C.No</th>
+            <th style="width: 140px;">Topic</th>
+            <th style="width: 90px;">Level</th>
+            <th>Question Description</th>
+            <th style="width: 170px;">
+              <div class="d-inline-flex align-items-center gap-2">
+                <span class="th-title">Status</span>
+                <div class="dropdown-wrapper">
+                  <button class="status-filter-toggle" type="button" (click)="toggleStatusDropdown()">
+                    <span class="status-indicator-dot" [ngClass]="{'bg-success': statusFilter === 'ACTIVE', 'bg-danger': statusFilter === 'DEACTIVE', 'bg-secondary': statusFilter === 'ALL'}"></span>
+                    <span>{{ statusFilter }}</span>
+                    <span class="dropdown-arrow">▼</span>
+                  </button>
+                  <ul class="custom-status-menu shadow" *ngIf="isStatusDropdownOpen">
+                    <li><button class="menu-item-btn" [class.active-item]="statusFilter === 'ALL'" (click)="onStatusFilterChange('ALL')"><span class="status-dot bg-secondary"></span> All Questions</button></li>
+                    <li><button class="menu-item-btn" [class.active-item]="statusFilter === 'ACTIVE'" (click)="onStatusFilterChange('ACTIVE')"><span class="status-dot bg-success"></span> Active Only</button></li>
+                    <li><button class="menu-item-btn" [class.active-item]="statusFilter === 'DEACTIVE'" (click)="onStatusFilterChange('DEACTIVE')"><span class="status-dot bg-danger"></span> Deactivated</button></li>
+                  </ul>
+                </div>
+              </div>
+            </th>
+            <th class="pe-4 text-center" style="width: 140px;">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let q of paginatedQuestions" class="table-row-hover">
+            <td class="ps-4 fw-bold text-secondary">{{ q.questionNo }}</td>
+            <td><span class="badge-course">{{ q.courseId }}</span></td>
+            <td class="fw-semibold text-secondary">{{ q.courseNo }}</td>
+            <td><span class="badge-topic">{{ q.topic || 'General' }}</span></td>
+            <td><span class="badge-level">Lvl {{ q.levels }}</span></td>
+            <td><div class="question-text" [title]="q.question">{{ q.question }}</div></td>
+            <td>
+              <span class="status-pill" [ngClass]="isActive(q) ? 'status-active' : 'status-deactive'">
+                <span class="status-dot-pulse"></span>{{ isActive(q) ? 'Active' : 'Deactivated' }}
+              </span>
+            </td>
+            <td class="pe-4 text-center">
+              <div class="action-btn-group">
+               <button class="btn-action btn-view" (click)="openView(q)">
+  <span>👁</span> View
+</button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="paginatedQuestions.length === 0">
+            <td colspan="8" class="text-center py-5 text-muted">No questions found matching the selected status.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Footer -->
+    <div class="card-footer footer-custom d-flex justify-content-between align-items-center px-4 py-3 bg-white">
+      <small class="text-muted">Showing {{ paginatedQuestions.length }} of {{ filteredQuestions.length }} questions</small>
+      <ul class="pagination pagination-custom mb-0 gap-1">
+        <li class="page-item" [class.disabled]="currentPage === 1"><button class="page-link" (click)="setPage(currentPage - 1)">Previous</button></li>
+        <li class="page-item active"><span class="page-link">{{ currentPage }}</span></li>
+        <li class="page-item" [class.disabled]="currentPage === totalPages"><button class="page-link" (click)="setPage(currentPage + 1)">Next</button></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Modals -->
+  <app-view-question *ngIf="isViewOpen && selectedQuestion" [question]="selectedQuestion" (close)="isViewOpen = false" (switchToModify)="handleSwitchToModify($event)"></app-view-question>
+  <!-- Modals file oda kadaisi line-la irukanum -->
+  <app-modify-question 
+    *ngIf="isModifyOpen && selectedQuestion" 
+    [question]="selectedQuestion" 
+    [courseList]="courses" 
+    (close)="isModifyOpen = false" 
+    (save)="handleSaveModified($event)">
+  </app-modify-question>
+<app-new-question 
+  *ngIf="isNewOpen" 
+  (close)="isNewOpen = false" 
+  (save)="handleSaveNew($event)">
+</app-new-question>
+</div>

@@ -1,0 +1,131 @@
+<div class="custom-modal-overlay">
+  <div class="custom-modal-container">
+    <div class="modal-header-section d-flex justify-content-between align-items-center p-3">
+      <h5 class="mb-0 fw-bold text-white">Add New Question</h5>
+      <button type="button" class="btn-close btn-close-white" (click)="onClose()"></button>
+    </div>
+
+    <div class="modal-body-section p-4">
+      <div class="row g-3">
+        <!-- Row 1 -->
+        <div class="col-md-4">
+          <label class="form-label small fw-semibold text-secondary mb-1">Course ID *</label>
+          <select class="form-select form-select-sm" [(ngModel)]="newForm.courseId" (change)="onCourseChange()">
+            <option value="">Select Course</option>
+            <option *ngFor="let c of courses" [value]="c.id">{{ c.id }} - {{ c.tech }}</option>
+          </select>
+        </div>
+
+        <div class="col-md-5 position-relative">
+          <label class="form-label small fw-semibold text-secondary mb-1">Topic / Technology *</label>
+          <select class="form-select form-select-sm" [class.is-invalid]="errors['topic']" [(ngModel)]="newForm.topic" (change)="onTopicChange()">
+            <option value="">Select Topic</option>
+            <option *ngFor="let cd of courseDetails" [value]="cd.tech">
+              {{ cd.tech }} (C.No: {{ cd.courseDetId }})
+            </option>
+          </select>
+          <div *ngIf="errors['topic']" class="field-error-popup">⚠️ {{ errors['topic'] }}</div>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label small fw-semibold text-secondary mb-1">Course No (Auto)</label>
+          <input type="text" class="form-control form-control-sm bg-light fw-bold text-dark" [value]="newForm.courseNo || '-'" readonly />
+        </div>
+
+        <!-- Row 2 -->
+        <div class="col-md-4 mt-3">
+          <label class="form-label small fw-semibold text-secondary mb-1">Question No (Auto)</label>
+          <input type="number" class="form-control form-control-sm bg-light fw-bold text-primary" [value]="newForm.questionNo" readonly />
+        </div>
+
+        <div class="col-md-4 mt-3">
+          <label class="form-label small fw-semibold text-secondary mb-1">Level (1-3) *</label>
+          <select class="form-select form-select-sm" [(ngModel)]="newForm.levels">
+            <option *ngFor="let lvl of levels" [value]="lvl">Level {{ lvl }}</option>
+          </select>
+        </div>
+
+        <div class="col-md-4 mt-3 position-relative">
+          <label class="form-label small fw-semibold text-secondary mb-1">Scores (pts) *</label>
+          <input 
+            type="number" 
+            class="form-control form-control-sm" 
+            [class.is-invalid]="errors['scores']" 
+            [(ngModel)]="newForm.scores" 
+            (input)="clearError('scores')" 
+            min="1" 
+            placeholder="Score (min 1)" 
+          />
+          <div *ngIf="errors['scores']" class="field-error-popup">⚠️ {{ errors['scores'] }}</div>
+        </div>
+
+        <!-- Row 3: Question Text -->
+        <div class="col-12 mt-3 position-relative">
+          <label class="form-label small fw-semibold text-secondary mb-1">Question Text *</label>
+          <textarea 
+            class="form-control form-control-sm" 
+            [class.is-invalid]="errors['question']" 
+            rows="3" 
+            [(ngModel)]="newForm.question" 
+            (input)="clearError('question')" 
+            placeholder="Type question description..."
+          ></textarea>
+          <div *ngIf="errors['question']" class="field-error-popup">⚠️ {{ errors['question'] }}</div>
+        </div>
+
+        <!-- Row 4: Options A & B -->
+        <div class="col-md-6 mt-2 position-relative">
+          <label class="form-label small fw-semibold text-secondary mb-1">Option A *</label>
+          <input type="text" class="form-control form-control-sm" [class.is-invalid]="errors['optA']" [(ngModel)]="newForm.optA" (input)="clearError('optA')" placeholder="Option A" />
+          <div *ngIf="errors['optA']" class="field-error-popup">⚠️ {{ errors['optA'] }}</div>
+        </div>
+        <div class="col-md-6 mt-2 position-relative">
+          <label class="form-label small fw-semibold text-secondary mb-1">Option B *</label>
+          <input type="text" class="form-control form-control-sm" [class.is-invalid]="errors['optB']" [(ngModel)]="newForm.optB" (input)="clearError('optB')" placeholder="Option B" />
+          <div *ngIf="errors['optB']" class="field-error-popup">⚠️ {{ errors['optB'] }}</div>
+        </div>
+
+        <!-- Row 5: Options C & D -->
+        <div class="col-md-6 mt-2 position-relative">
+          <label class="form-label small fw-semibold text-secondary mb-1">Option C *</label>
+          <input type="text" class="form-control form-control-sm" [class.is-invalid]="errors['optC']" [(ngModel)]="newForm.optC" (input)="clearError('optC')" placeholder="Option C" />
+          <div *ngIf="errors['optC']" class="field-error-popup">⚠️ {{ errors['optC'] }}</div>
+        </div>
+        <div class="col-md-6 mt-2 position-relative">
+          <label class="form-label small fw-semibold text-secondary mb-1">Option D *</label>
+          <input type="text" class="form-control form-control-sm" [class.is-invalid]="errors['optD']" [(ngModel)]="newForm.optD" (input)="clearError('optD')" placeholder="Option D" />
+          <div *ngIf="errors['optD']" class="field-error-popup">⚠️ {{ errors['optD'] }}</div>
+        </div>
+
+        <!-- Row 6: Correct Answer & Entered By -->
+        <div class="col-md-6 mt-3">
+          <label class="form-label small fw-semibold text-secondary mb-1">Correct Answer *</label>
+          <select class="form-select form-select-sm" [(ngModel)]="newForm.ans">
+            <option value="A">Option A</option>
+            <option value="B">Option B</option>
+            <option value="C">Option C</option>
+            <option value="D">Option D</option>
+          </select>
+        </div>
+
+        <div class="col-md-6 mt-3">
+          <label class="form-label small fw-semibold text-secondary mb-1">Entered By</label>
+          <input type="text" class="form-control form-control-sm bg-light fw-bold text-secondary" [value]="newForm.enteredBy" readonly />
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-footer-section p-3 d-flex justify-content-between align-items-center border-top">
+      <div class="d-flex align-items-center gap-2">
+        <span class="small fw-semibold text-secondary">Status:</span>
+        <span class="badge-status-active">● Active</span>
+      </div>
+
+      <div class="d-flex gap-2">
+        <button class="btn btn-secondary btn-sm" (click)="onClose()">Cancel</button>
+        <button class="btn btn-success btn-sm px-3" (click)="onSubmit()">Save Question</button>
+      </div>
+    </div>
+  </div>
+</div>

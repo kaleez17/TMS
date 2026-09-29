@@ -1,0 +1,113 @@
+<div class="modal-backdrop-custom">
+  <div class="modal-dialog-custom">
+    <div class="modal-content-custom">
+      <div class="modal-header-custom d-flex justify-content-between align-items-center p-3">
+        <h6 class="mb-0 fw-bold">Modify Question #{{ editForm.questionNo }}</h6>
+        <button type="button" class="btn-close" (click)="onClose()"></button>
+      </div>
+
+      <div class="modal-body-custom p-4">
+        <div class="row g-3">
+          <div class="col-md-3">
+            <label class="form-label small fw-semibold text-secondary mb-1">Course ID</label>
+            <select class="form-select form-select-sm" [ngModel]="editForm.courseId" (ngModelChange)="onCourseChange($event)">
+              <option *ngFor="let c of courseList" [value]="c">{{ c }}</option>
+            </select>
+          </div>
+
+          <div class="col-md-5">
+            <label class="form-label small fw-semibold text-secondary mb-1">Topic / Technology *</label>
+            <select class="form-select form-select-sm" [class.is-invalid]="errors['topic']" [(ngModel)]="editForm.topic" (change)="onTopicChange()">
+              <option value="">Select Topic</option>
+              <option *ngFor="let cd of courseDetList" [value]="cd.tech || cd.topic">
+                {{ cd.tech || cd.topic }}
+              </option>
+            </select>
+            <div *ngIf="errors['topic']" class="field-error-popup">⚠️ {{ errors['topic'] }}</div>
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label small fw-semibold text-secondary mb-1">Course No</label>
+            <input type="text" class="form-control form-control-sm bg-light fw-bold text-dark" [value]="editForm.courseNo || '-'" readonly />
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label small fw-semibold text-secondary mb-1">Status</label>
+            <select class="form-select form-select-sm" [(ngModel)]="editForm.delFlg">
+              <option value="A">Active</option>
+              <option value="D">De-Active</option>
+            </select>
+          </div>
+
+          <div class="col-md-3 mt-3">
+            <label class="form-label small fw-semibold text-secondary mb-1">Level (1-3) *</label>
+            <select class="form-select form-select-sm" [(ngModel)]="editForm.levels">
+              <option *ngFor="let lvl of levelList" [value]="lvl">Level {{ lvl }}</option>
+            </select>
+          </div>
+
+          <div class="col-md-3 mt-3 position-relative">
+            <label class="form-label small fw-semibold text-secondary mb-1">Scores (pts) *</label>
+            <input 
+              type="number" 
+              class="form-control form-control-sm" 
+              [class.is-invalid]="errors['scores']" 
+              [(ngModel)]="editForm.scores" 
+              (input)="clearError('scores')" 
+              min="1" 
+              placeholder="Score (min 1)" 
+            />
+            <div *ngIf="errors['scores']" class="field-error-popup">⚠️ {{ errors['scores'] }}</div>
+          </div>
+
+          <!-- Question Text -->
+          <div class="col-12 mt-3 position-relative">
+            <label class="form-label small fw-semibold text-secondary mb-1">Question Text *</label>
+            <textarea class="form-control form-control-sm" [class.is-invalid]="errors['question']" rows="3" [(ngModel)]="editForm.question" (input)="clearError('question')" placeholder="Question text..."></textarea>
+            <div *ngIf="errors['question']" class="field-error-popup">⚠️ {{ errors['question'] }}</div>
+          </div>
+
+          <!-- Options optA, optB, optC, optD -->
+          <div class="col-md-6 mt-2 position-relative">
+            <label class="form-label small fw-semibold text-secondary mb-1">Option A *</label>
+            <input type="text" class="form-control form-control-sm" [class.is-invalid]="errors['optA']" [(ngModel)]="editForm.optA" (input)="clearError('optA')" placeholder="Option A" />
+            <div *ngIf="errors['optA']" class="field-error-popup">⚠️ {{ errors['optA'] }}</div>
+          </div>
+
+          <div class="col-md-6 mt-2 position-relative">
+            <label class="form-label small fw-semibold text-secondary mb-1">Option B *</label>
+            <input type="text" class="form-control form-control-sm" [class.is-invalid]="errors['optB']" [(ngModel)]="editForm.optB" (input)="clearError('optB')" placeholder="Option B" />
+            <div *ngIf="errors['optB']" class="field-error-popup">⚠️ {{ errors['optB'] }}</div>
+          </div>
+
+          <div class="col-md-6 mt-2 position-relative">
+            <label class="form-label small fw-semibold text-secondary mb-1">Option C *</label>
+            <input type="text" class="form-control form-control-sm" [class.is-invalid]="errors['optC']" [(ngModel)]="editForm.optC" (input)="clearError('optC')" placeholder="Option C" />
+            <div *ngIf="errors['optC']" class="field-error-popup">⚠️ {{ errors['optC'] }}</div>
+          </div>
+
+          <div class="col-md-6 mt-2 position-relative">
+            <label class="form-label small fw-semibold text-secondary mb-1">Option D *</label>
+            <input type="text" class="form-control form-control-sm" [class.is-invalid]="errors['optD']" [(ngModel)]="editForm.optD" (input)="clearError('optD')" placeholder="Option D" />
+            <div *ngIf="errors['optD']" class="field-error-popup">⚠️ {{ errors['optD'] }}</div>
+          </div>
+
+          <div class="col-md-6 mt-3">
+            <label class="form-label small fw-semibold text-secondary mb-1">Correct Answer *</label>
+            <select class="form-select form-select-sm" [(ngModel)]="editForm.ans">
+              <option value="A">Option A</option>
+              <option value="B">Option B</option>
+              <option value="C">Option C</option>
+              <option value="D">Option D</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer-custom p-3 d-flex justify-content-end gap-2 border-top">
+        <button class="btn btn-secondary btn-sm" (click)="onClose()">Cancel</button>
+        <button class="btn btn-warning btn-sm px-3 fw-semibold text-dark" (click)="onUpdate()">Update Question</button>
+      </div>
+    </div>
+  </div>
+</div>
