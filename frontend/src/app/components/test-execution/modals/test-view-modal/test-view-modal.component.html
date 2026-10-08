@@ -1,0 +1,151 @@
+<div class="modal fade show d-block view-backdrop" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden bg-white">
+      
+      <!-- Top Sleek Header -->
+      <div class="modal-header-custom px-4 py-3 d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-3">
+          <span class="badge-seq-dark">#{{ testData.testNo }}</span>
+          <div>
+            <h5 class="m-0 fw-bold text-white header-title">Assessment Configuration Details</h5>
+            <span class="header-subtitle">Detailed verification and evaluation parameters</span>
+          </div>
+        </div>
+        <button type="button" class="btn-close-custom" aria-label="Close" (click)="onClose()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body p-4">
+        
+        <!-- Score & Attended Highlight Banner (Completed aana test-kku mattum kaattum) -->
+        <div *ngIf="isCompleted && !loading" class="score-highlight-card p-3 mb-4 rounded-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
+          <div class="d-flex align-items-center gap-3">
+            <div class="score-trophy-box">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#2563eb" viewBox="0 0 16 16">
+                <path d="M2.5.5A.5.5 0 0 1 3 0h10a.5.5 0 0 1 .5.5c0 .538-.012 1.05-.034 1.536a3 3 0 1 1-1.133 5.89c-.79 1.865-1.878 2.774-3.333 3.025v2.049h1.5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1h1.5v-2.049c-1.455-.251-2.543-1.16-3.333-3.025a3 3 0 1 1-1.133-5.89A33 33 0 0 1 2.5.5m.75 3.003a2 2 0 1 0 0 3.994zM12.75 7.5a2 2 0 1 0 0-3.994z"/>
+              </svg>
+            </div>
+            <div>
+              <span class="score-banner-label">PERFORMANCE SCORE</span>
+              <div class="d-flex align-items-baseline gap-2">
+                <h3 class="m-0 fw-bold text-dark">{{ summary?.totalScore }} <span class="score-max-text">/ {{ summary?.totalAssignedQuestions }}</span></h3>
+                <span class="badge score-percent-pill" [class.percent-pass]="(summary?.percentage || 0) >= 60">
+                  {{ summary?.percentage }}% Score
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="vr d-none d-md-block opacity-25" style="height: 40px;"></div>
+
+          <!-- Attended Count Metric -->
+          <div class="pe-md-4">
+            <span class="score-banner-label">ATTENDED QUESTIONS</span>
+            <div class="d-flex align-items-baseline gap-2">
+              <h4 class="m-0 fw-bold text-dark">
+                {{ summary?.totalAttendedQuestions }} <span class="score-max-text">/ {{ summary?.totalAssignedQuestions }}</span>
+              </h4>
+              <span class="text-muted small fw-medium">MCQs</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2-Column Clean Field Grid (Original First Design) -->
+        <div class="row g-3">
+          
+          <!-- Student No -->
+          <div class="col-md-6">
+            <div class="field-card p-3 rounded-3">
+              <span class="field-label">Student Identification</span>
+              <div class="field-val-bold text-primary">{{ testData.studentId }}-{{ testData.studentNo }}</div>
+            </div>
+          </div>
+
+          <!-- Scheduled Date -->
+          <div class="col-md-6">
+            <div class="field-card p-3 rounded-3">
+              <span class="field-label">Scheduled Exam Date</span>
+              <div class="field-val-bold text-dark">{{ testData.testDate }}</div>
+            </div>
+          </div>
+
+          <!-- Course & Technology -->
+          <div class="col-md-6">
+            <div class="field-card p-3 rounded-3">
+              <span class="field-label">Course / Technology</span>
+              <div class="d-flex align-items-center gap-2 mt-1">
+                <span class="badge-code">{{ testData.courseId }}</span>
+                <span class="field-val-bold text-dark">{{ getTopicTitle() }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Evaluation Level -->
+          <div class="col-md-6">
+            <div class="field-card p-3 rounded-3">
+              <span class="field-label">Evaluation Level</span>
+              <div>
+                <span class="badge-level-chip">Level {{ testData.lvl || 1 }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total Questions -->
+          <div class="col-md-6">
+            <div class="field-card p-3 rounded-3">
+              <span class="field-label">Total Assigned Questions</span>
+              <div class="field-val-bold text-dark">{{ testData.noOfQuestions || 10 }} MCQs</div>
+            </div>
+          </div>
+
+          <!-- Duration -->
+          <div class="col-md-6">
+            <div class="field-card p-3 rounded-3">
+              <span class="field-label">Allowed Test Duration</span>
+              <div class="field-val-bold text-dark">
+                {{ (testData.timePerTest && testData.timePerTest > 60) ? (testData.timePerTest / 60 | number:'1.0-0') : (testData.timePerTest || 15) }} Minutes
+              </div>
+            </div>
+          </div>
+
+          <!-- Conducted By -->
+          <div class="col-md-6">
+            <div class="field-card p-3 rounded-3">
+              <span class="field-label">Assigned Lead / Trainer</span>
+              <div class="field-val-bold text-dark">{{ testData.testConductedBy || 'Senior Tech Lead' }}</div>
+            </div>
+          </div>
+
+          <!-- Assessment Status -->
+          <div class="col-md-6">
+            <div class="field-card p-3 rounded-3">
+              <span class="field-label">Execution Status</span>
+              <div>
+                <span *ngIf="isCompleted" class="status-pill status-completed">
+                  <span class="dot-green"></span> Completed
+                </span>
+                <span *ngIf="!isCompleted" class="status-pill status-scheduled">
+                  <span class="dot-amber"></span> Scheduled
+                </span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Clean Footer -->
+      <div class="modal-footer px-4 py-3 bg-light border-top d-flex justify-content-end">
+        <button type="button" class="btn btn-secondary rounded-pill px-4 fw-semibold" style="font-size: 0.85rem;" (click)="onClose()">
+          Close
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -67,7 +67,7 @@
             <div *ngIf="errors['question']" class="field-error-popup">⚠️ {{ errors['question'] }}</div>
           </div>
 
-          <!-- Options optA, optB, optC, optD -->
+          <!--":{}>"? Options ?":>{}"-->
           <div class="col-md-6 mt-2 position-relative">
             <label class="form-label small fw-semibold text-secondary mb-1">Option A *</label>
             <input type="text" class="form-control form-control-sm" [class.is-invalid]="errors['optA']" [(ngModel)]="editForm.optA" (input)="clearError('optA')" placeholder="Option A" />

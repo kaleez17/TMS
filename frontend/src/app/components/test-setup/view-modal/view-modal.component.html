@@ -1,0 +1,194 @@
+<div class="modal-backdrop fade show" *ngIf="isOpen"></div>
+<div class="modal d-block" *ngIf="isOpen" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content shadow-lg border-0 rounded-3 overflow-hidden">
+      
+      <!-- Blue Header with Corner Modify & Close -->
+      <div class="modal-header bg-primary text-white py-2 px-3 d-flex align-items-center justify-content-between">
+        <h5 class="modal-title fs-6 fw-bold mb-0">View Test Setup Details</h5>
+        <div class="d-flex align-items-center gap-2 ms-auto">
+          <button type="button" class="btn btn-sm btn-light fw-bold text-primary px-3 py-1 shadow-sm" (click)="onModify()">
+            Modify
+          </button>
+          <button type="button" class="btn-close btn-close-white" (click)="onClose()" aria-label="Close"></button>
+        </div>
+      </div>
+      
+
+      <div class="modal-body p-4 bg-light" *ngIf="record">
+      
+                <!-- Candidate Name & Record Card -->
+        <div class="card border-0 shadow-sm p-3 mb-3 bg-white rounded-3">
+          <span class="text-muted small fw-bold text-uppercase tracking-wider">CANDIDATE NAME & RECORD</span>
+          <h5 class="fw-bold text-dark mt-1 mb-1">{{ record.studentName || '-' }}</h5>
+          <div class="text-secondary small">
+            <span>Student ID: <b class="text-dark">{{ record.studentId || '-' }}</b></span>
+            <span class="mx-2">|</span>
+            <span>Student No: <b class="text-dark">{{ record.studentNo }}</b></span>
+          </div>
+        </div>
+        
+        <!-- Top Metadata: Course ID, Course No, Test No -->
+        <div class="row g-2 mb-2">
+          <div class="col-4">
+            <div class="meta-box">
+              <span class="meta-label">Course ID</span>
+              <span class="badge bg-secondary px-2 py-1 fs-6">{{ record.courseId || '-' }}</span>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="meta-box">
+              <span class="meta-label">Course No</span>
+              <span class="badge bg-secondary px-2 py-1 fs-6">{{ record.courseNo || '-' }}</span>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="meta-box">
+              <span class="meta-label">Test No</span>
+              <span class="badge bg-dark px-2 py-1 fs-6">#{{ record.testNo || '-' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Topic, Level, Questions & Timing Boxes -->
+        <div class="row g-2 mb-3">
+          <div class="col-3">
+            <div class="meta-box">
+              <span class="meta-label">Topic</span>
+              <span class="meta-val text-truncate" [title]="record.topicName || '-'">
+                {{ record.topicName || '-' }}
+              </span>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="meta-box">
+              <span class="meta-label">Level</span>
+              <span class="meta-val">
+                {{ record.lvl ? ('Level ' + record.lvl) : '-' }}
+              </span>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="meta-box">
+              <span class="meta-label">Questions (Total)</span>
+              <span class="meta-val text-primary fw-bold">
+                {{ record.noOfQuestions || 0 }} Qs
+              </span>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="meta-box">
+              <span class="meta-label">Test-Timing</span>
+              <span class="meta-val text-primary fw-bold">
+                {{ (record.timePerTest || 0) >= 60 ? ((record.timePerTest || 0) / 60 + ' Mins') : ((record.timePerTest || 0) + ' Secs') }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2x2 Grid Cards for Details -->
+        <div class="details-grid mb-3">
+          
+          <!-- Scheduled Date Card -->
+          <div class="grid-card">
+            <div>
+              <div class="text-muted small fw-medium">Scheduled Date</div>
+              <div class="fw-bold text-dark fs-6 mt-1">
+                {{ record.testDate || '-' }}
+              </div>
+            </div>
+            <div class="card-icon text-primary">
+              <i class="fa-regular fa-calendar-days"></i>
+            </div>
+          </div>
+
+          <!-- Mobile Number Card -->
+          <div class="grid-card">
+            <div>
+              <div class="text-muted small fw-medium">Mobile Number</div>
+              <div class="fw-bold text-dark fs-6 mt-1">
+                {{ record.mobileNo || '-' }}
+              </div>
+            </div>
+            <div class="card-icon text-primary">
+              <i class="fa-solid fa-phone"></i>
+            </div>
+          </div>
+
+          <!-- Conducted By Card (Evaluator) -->
+          <div class="grid-card">
+            <div>
+              <div class="text-muted small fw-medium">Conducted By</div>
+              <div class="fw-bold text-dark fs-6 mt-1">
+                {{ record.evaluatorName || record.testConductedBy || '-' }}
+              </div>
+            </div>
+            <div class="card-icon text-primary">
+              <i class="fa-solid fa-user-tie"></i>
+            </div>
+          </div>
+
+          <!-- Status Card -->
+          <div class="grid-card">
+            <div>
+              <div class="text-muted small fw-medium">Status</div>
+              <div class="mt-1">
+                <span class="badge" 
+                      [ngClass]="record.delFlag === 'A' 
+                        ? 'bg-success-subtle text-success border border-success-subtle' 
+                        : 'bg-danger-subtle text-danger border border-danger-subtle'">
+                  {{ record.delFlag === 'A' ? 'Active' : 'Deactivated' }}
+                </span>
+              </div>
+            </div>
+            
+            <div class="card-icon" [ngClass]="record.delFlag === 'A' ? 'text-success' : 'text-danger'">
+              <i class="fa-solid" [ngClass]="record.delFlag === 'A' ? 'fa-circle-check' : 'fa-circle-xmark'"></i>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Execution & Audit Details Footer Strip -->
+        <div class="card border-0 bg-white p-3 rounded-3 border shadow-sm">
+          <div class="row g-2 text-secondary small align-items-center">
+            
+            <div class="col-sm-3">
+              <span class="fw-medium">Entered By:</span> 
+              <span class="fw-bold text-dark ms-1">{{ record.entryBy || 'admin' }}</span>
+            </div>
+
+            <div class="col-sm-3">
+              <span class="fw-medium">Entry Date:</span> 
+              <span class="fw-bold text-dark ms-1">{{ record.entryDate || '-' }}</span>
+            </div>
+
+            <div class="col-sm-3">
+              <span class="fw-medium">Executed Date:</span> 
+              <span class="fw-bold text-dark ms-1">
+                {{ record.executedDate ? record.executedDate : '—' }}
+              </span>
+            </div>
+
+            <div class="col-sm-3 text-sm-end">
+              <span class="fw-medium">Test Completed:</span> 
+              <span class="badge ms-1" [ngClass]="isTestCompleted ? 'bg-success' : 'bg-danger-subtle text-danger border border-danger-subtle'">
+                {{ isTestCompleted ? 'True' : 'False' }}
+              </span>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Bottom Actions -->
+      <div class="modal-footer bg-white border-top py-2 px-3">
+        <button type="button" class="btn btn-dark btn-sm px-4 fw-medium" (click)="onClose()">
+          Close
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

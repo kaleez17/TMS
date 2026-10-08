@@ -16,28 +16,15 @@ import { NewQuestionComponent } from './modals/new-question/new-question';
   styleUrls: ['./question-bank.css']
 })
 export class QuestionBankComponent implements OnInit {
-  courses: CourseMaster[] = [];
-  courseDetails: CourseDet[] = [];
-  questionNumbers: number[] = [];
-  allLoadedQuestions: any[] = [];
-  filteredQuestions: any[] = [];
-  paginatedQuestions: any[] = [];
-
-  selectedCourseId = '';
-  selectedCourseNo = '';
-  selectedQuestionNo = '';
-
+  courses: CourseMaster[] = []; courseDetails: CourseDet[] = []; questionNumbers: number[] = [];
+  paginatedQuestions: any[] = []; filteredQuestions: any[] = [];
+  selectedCourseId = ''; selectedCourseNo = ''; selectedQuestionNo = '';
+  searchQuery = ''; isDropdownOpen = false;
   statusFilter: 'ALL' | 'ACTIVE' | 'DEACTIVE' = 'ACTIVE';
   isStatusDropdownOpen = false;
-
-  currentPage = 1;
-  pageSize = 5;
-  totalPages = 1;
-
+  currentPage = 1; pageSize = 5; totalPages = 1; totalRecords = 0;
   selectedQuestion: any = null;
-  isViewOpen = false;
-  isModifyOpen = false;
-  isNewOpen = false;
+  isViewOpen = false; isModifyOpen = false; isNewOpen = false;
 
   constructor(private qbService: QuestionBankService) {}
 
@@ -46,112 +33,90 @@ export class QuestionBankComponent implements OnInit {
     this.fetchQuestions();
   }
 
-  fetchQuestions(cId?: string, cNo?: number, qNo?: number): void {
-    this.qbService.getAllQuestions(cId, cNo, qNo).subscribe({
-      next: (data: any) => {
-        this.allLoadedQuestions = Array.isArray(data) ? data : (data?.content || []);
-        this.applyStatusFilter();
-      },
-      error: () => {
-        this.allLoadedQuestions = [];
-        this.applyStatusFilter();
-      }
-    });
-  }
-  
-
+fetchQuestions(): void {
+  const pageIndex = Math.max(0, Number(this.currentPage) - 1);
+  this.qbService.getAllQuestions(
+    this.selectedCourseId || undefined,
+    this.selectedCourseNo ? +this.selectedCourseNo : undefined,
+    this.selectedQuestionNo ? +this.selectedQuestionNo : undefined,
+    pageIndex,
+    this.pageSize,
+    this.statusFilter
+  ).subscribe({
+    next: (res: any) => {
+      this.paginatedQuestions = res?.content || [];
+      this.totalRecords = Number(res?.totalElements || 0); // 300
+      this.totalPages = Number(res?.totalPages || 1);       // 60
+    },
+    error: () => {
+      this.paginatedQuestions = [];
+      this.totalRecords = 0;
+      this.totalPages = 1;
+    }
+  });
+}
   isActive = (q: any): boolean => (q?.delFlg ?? q?.del_flg ?? 'A').toString().trim().toUpperCase() !== 'D';
+  toggleStatusDropdown = () => this.isStatusDropdownOpen = !this.isStatusDropdownOpen;
 
-  toggleStatusDropdown(): void {
-    this.isStatusDropdownOpen = !this.isStatusDropdownOpen;
-  }
 
-  onStatusFilterChange(filter: 'ALL' | 'ACTIVE' | 'DEACTIVE'): void {
-    this.statusFilter = filter;
-    this.isStatusDropdownOpen = false;
-    this.applyStatusFilter();
-  }
+onStatusFilterChange(filter: 'ALL' | 'ACTIVE' | 'DEACTIVE'): void {
+  this.statusFilter = filter;
+  this.isStatusDropdownOpen = false;
+  this.currentPage = 1; 
+  this.fetchQuestions();
+}
 
   applyStatusFilter(): void {
-    this.filteredQuestions = this.statusFilter === 'ALL' 
-      ? [...this.allLoadedQuestions] 
-      : this.allLoadedQuestions.filter(q => this.statusFilter === 'ACTIVE' ? this.isActive(q) : !this.isActive(q));
-    this.currentPage = 1;
-    this.updatePageData();
+    const list = this.statusFilter === 'ALL' ? [...this.filteredQuestions]
+      : this.filteredQuestions.filter(q => this.statusFilter === 'ACTIVE' ? this.isActive(q) : !this.isActive(q));
+    this.paginatedQuestions = list.slice(0, this.pageSize);
   }
 
-  updatePageData(): void {
-    this.totalPages = Math.ceil(this.filteredQuestions.length / this.pageSize) || 1;
-    const start = (this.currentPage - 1) * this.pageSize;
-    this.paginatedQuestions = this.filteredQuestions.slice(start, start + this.pageSize);
+  get filteredDropdownList(): { qNo: number; text: string }[] {
+    const qMap = new Map<number, string>(this.paginatedQuestions.map(q => [Number(q.questionNo), q.question || '']));
+    const list = this.questionNumbers.map(n => ({ qNo: n, text: qMap.get(n) || '' }));
+    const s = this.searchQuery.trim().toLowerCase();
+    return s ? list.filter(i => i.qNo.toString().includes(s) || i.text.toLowerCase().includes(s)) : list;
   }
 
-  onCourseChange(): void {
-    this.selectedCourseNo = this.selectedQuestionNo = '';
-    this.courseDetails = [];
-    this.questionNumbers = [];
-    if (this.selectedCourseId) {
-      this.qbService.getCourseDetails(this.selectedCourseId).subscribe(res => (this.courseDetails = res || []));
-      this.fetchQuestions(this.selectedCourseId);
-    } else {
+  onSearchInput = () => this.isDropdownOpen = true;
+
+  selectOption(qNo: any, label: string): void {
+    this.selectedQuestionNo = qNo ? qNo.toString() : ''; this.searchQuery = qNo ? label : '';
+    this.isDropdownOpen = false; this.currentPage = 1; this.onQuestionNoChange();
+  }
+
+  clearSearch(): void {
+    this.selectedQuestionNo = ''; this.searchQuery = ''; this.isDropdownOpen = false;
+    this.currentPage = 1; this.fetchQuestions();
+  }
+
+  setPage(page: any): void {
+    const p = Number(page);
+    if (p >= 1 && p <= this.totalPages && p !== this.currentPage) {
+      this.currentPage = p;
       this.fetchQuestions();
     }
   }
 
+  onCourseChange(): void {
+    this.selectedCourseNo = this.selectedQuestionNo = this.searchQuery = ''; this.courseDetails = []; this.questionNumbers = [];
+    this.currentPage = 1;
+    if (this.selectedCourseId) this.qbService.getCourseDetails(this.selectedCourseId).subscribe(res => this.courseDetails = res || []);
+    this.fetchQuestions();
+  }
+
   onCourseNoChange(): void {
-    this.selectedQuestionNo = '';
-    this.questionNumbers = [];
-    if (this.selectedCourseId && this.selectedCourseNo) {
-      this.qbService.getQuestionNumbers(this.selectedCourseId, +this.selectedCourseNo).subscribe(res => (this.questionNumbers = res || []));
-      this.fetchQuestions(this.selectedCourseId, +this.selectedCourseNo);
-    }
+    this.selectedQuestionNo = this.searchQuery = ''; this.questionNumbers = []; this.currentPage = 1;
+    if (this.selectedCourseId && this.selectedCourseNo) this.qbService.getQuestionNumbers(this.selectedCourseId, +this.selectedCourseNo).subscribe(res => this.questionNumbers = res || []);
+    this.fetchQuestions();
   }
 
-  onQuestionNoChange(): void {
-    if (this.selectedCourseId && this.selectedCourseNo && this.selectedQuestionNo) {
-      this.fetchQuestions(this.selectedCourseId, +this.selectedCourseNo, +this.selectedQuestionNo);
-    }
-  }
-
-  setPage(page: number): void {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-      this.updatePageData();
-    }
-  }
-
-  openView(q: any): void { this.selectedQuestion = q; this.isViewOpen = true; }
-  openModify(q: any): void { this.selectedQuestion = { ...q }; this.isModifyOpen = true; }
-  openNew(): void {
-  console.log('New Question Button Clicked!');
-  this.isNewOpen = true;
-}
-
-  handleSwitchToModify(q: any): void {
-    this.isViewOpen = false;
-    this.selectedQuestion = q ? { ...q } : this.selectedQuestion;
-    this.isModifyOpen = true;
-  }
-
-  handleSaveNew(newQ: TmsQuestionBank): void {
-    this.qbService.addQuestion(newQ).subscribe(() => {
-      this.isNewOpen = false;
-      this.fetchQuestions(this.selectedCourseId || undefined, this.selectedCourseNo ? +this.selectedCourseNo : undefined, this.selectedQuestionNo ? +this.selectedQuestionNo : undefined);
-    });
-  }
-
-  handleSaveModified(updatedQuestion: any): void {
-    this.qbService.updateQuestion(updatedQuestion).subscribe({
-      next: (savedRes: any) => {
-        const res = savedRes || updatedQuestion;
-        const flg = (res.delFlg ?? res.del_flg ?? updatedQuestion.delFlg ?? updatedQuestion.del_flg ?? 'A').toString().trim().toUpperCase();
-        const idx = this.allLoadedQuestions.findIndex(q => String(q.courseId) === String(updatedQuestion.courseId) && Number(q.courseNo) === Number(updatedQuestion.courseNo) && Number(q.questionNo) === Number(updatedQuestion.questionNo));
-        if (idx !== -1) {
-          this.allLoadedQuestions[idx] = { ...this.allLoadedQuestions[idx], ...res, delFlg: flg, del_flg: flg };
-        }
-        this.applyStatusFilter();
-        this.isModifyOpen = false;
-      }
-    });
-  }
+  onQuestionNoChange = () => { this.currentPage = 1; this.fetchQuestions(); };
+  openView = (q: any) => { this.selectedQuestion = q; this.isViewOpen = true; };
+  openModify = (q: any) => { this.selectedQuestion = { ...q }; this.isModifyOpen = true; };
+  openNew = () => this.isNewOpen = true;
+  handleSwitchToModify = (q: any) => { this.isViewOpen = false; this.selectedQuestion = q ? { ...q } : this.selectedQuestion; this.isModifyOpen = true; };
+  handleSaveNew = (newQ: TmsQuestionBank) => this.qbService.addQuestion(newQ).subscribe(() => { this.isNewOpen = false; this.fetchQuestions(); });
+  handleSaveModified = (updated: any) => this.qbService.updateQuestion(updated).subscribe(() => { this.isModifyOpen = false; this.fetchQuestions(); });
 }

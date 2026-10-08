@@ -1,0 +1,152 @@
+<div class="test-setup-container p-4">
+
+<!-- Top Filter Bar: Student Search + New Button Only -->
+<div class="bg-white p-3 rounded-3 shadow-sm mb-3 border d-flex justify-content-between align-items-center">
+  
+  <!-- Student Search Input Box -->
+  <div style="max-width: 400px; width: 100%;">
+    <label class="form-label text-muted small fw-bold text-uppercase mb-1">Student</label>
+    <div class="input-group">
+      <span class="input-group-text bg-light border-end-0 text-muted">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </span>
+      <input 
+        type="text" 
+        class="form-control bg-light border-start-0 ps-0" 
+        placeholder="Type student name or ID..."
+        [(ngModel)]="searchStudentQuery" 
+        (ngModelChange)="onStudentSearchChange()" />
+      <button 
+        *ngIf="searchStudentQuery" 
+        class="btn btn-outline-secondary border-start-0 bg-light" 
+        type="button" 
+        (click)="clearSearch()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  </div>
+
+  <!--  New Test Setup Button -->
+  <div>
+    <button class="btn btn-primary fw-semibold px-4 py-2 shadow-sm rounded-2" (click)="openNew()">
+      + New Test Setup
+    </button>
+  </div>
+
+</div>
+
+  <!-- Question Bank Style Card -->
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white mb-4">
+    
+    <!-- DARK NAVY HEADER (Direct CSS styled, zero table conflicts) -->
+    <div class="qb-header-row d-flex align-items-center px-4 py-3 text-white fw-bold">
+      <div class="col-tno text-start">T.NO</div>
+      <div class="col-student text-start">STUDENT</div>
+      <div class="col-date text-start">DATE</div>
+      <div class="col-course text-start">COURSE</div>
+      <div class="col-tech text-start">TECH</div>
+      <div class="col-level text-start">LEVEL</div>
+      <div class="col-evaluator text-start">EVALUATOR</div>
+      
+      <!-- Status Dropdown in Navy Header -->
+      <div class="col-status text-start position-relative">
+        <span class="me-2 text-white">STATUS</span>
+        <button type="button" 
+                class="btn btn-light btn-sm rounded-pill px-3 py-1 fw-bold text-dark border-0 header-status-btn"
+                (click)="toggleStatusDropdown()">
+          <span class="status-dot" [ngClass]="statusFilter === 'ACTIVE' ? 'dot-active' : (statusFilter === 'INACTIVE' ? 'dot-inactive' : 'dot-all')"></span>
+          {{ statusFilter === 'ACTIVE' ? 'ACTIVE' : (statusFilter === 'INACTIVE' ? 'DEACTIVATED' : 'ALL') }} ▾
+        </button>
+
+        <!-- Dropdown Menu -->
+        <div *ngIf="isStatusDropdownOpen" 
+             class="position-absolute bg-white shadow-lg border rounded-3 py-2 z-3 mt-1" 
+             style="min-width: 140px; right: 0;">
+          <div class="px-3 py-2 cursor-pointer hover-item small text-dark" (click)="changeStatusFilter('ALL')">
+            <span class="status-dot dot-all"></span> All Setups
+          </div>
+          <div class="px-3 py-2 cursor-pointer hover-item small text-success fw-semibold" (click)="changeStatusFilter('ACTIVE')">
+            <span class="status-dot dot-active"></span> Active Only
+          </div>
+          <div class="px-3 py-2 cursor-pointer hover-item small text-danger fw-semibold" (click)="changeStatusFilter('INACTIVE')">
+            <span class="status-dot dot-inactive"></span> Deactivated
+          </div>
+        </div>
+      </div>
+
+      <div class="col-action text-end">ACTION</div>
+    </div>
+
+    <!-- Data Rows List (Per page 4 records) -->
+    <div class="qb-table-body">
+      
+      <div *ngIf="loading" class="text-center py-5 text-muted">
+        <span class="spinner-border spinner-border-sm me-2 text-primary"></span> Loading test setups...
+      </div>
+
+      <div *ngIf="!loading && records.length === 0" class="text-center py-5 text-muted">
+        No test setup records found.
+      </div>
+
+      <!-- Row Item -->
+      <div *ngFor="let r of records" class="qb-row d-flex align-items-center px-4 py-3 border-bottom">
+        <div class="col-tno fw-semibold text-secondary">#{{ r.testNo }}</div>
+        
+        <div class="col-student">
+          <div class="fw-bold text-dark">{{ r.studentName }}</div>
+          <small class="text-muted">{{ r.studentId }} (No: {{ r.studentNo }})</small>
+        </div>
+
+        <div class="col-date text-secondary fw-semibold">{{ r.testDate }}</div>
+
+        <div class="col-course">
+          <span class="badge course-badge">{{ r.courseId }}</span>
+        </div>
+
+        <div class="col-tech">
+          <span class="badge topic-badge">{{ r.topicName || '-' }}</span>
+        </div>
+
+        <div class="col-level">
+          <span class="badge level-badge">Lvl {{ r.lvl }}</span>
+        </div>
+
+        <div class="col-evaluator text-dark fw-medium">
+          {{ r.evaluatorName || r.testConductedBy }}
+        </div>
+
+        <div class="col-status">
+          <span class="badge status-pill" [ngClass]="r.delFlag === 'A' ? 'status-pill-active' : 'status-pill-inactive'">
+            ● {{ r.delFlag === 'A' ? 'Active' : 'Deactivated' }}
+          </span>
+        </div>
+
+        <div class="col-action text-end">
+          <button class="btn btn-action-view d-inline-flex align-items-center gap-1" (click)="openView(r)">
+            <i class="bi bi-eye"></i> View
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+<!-- Footer Section with Shared Pagination Component -->
+    <div class="d-flex justify-content-between align-items-center px-4 py-3 bg-white border-top">
+      <small class="text-muted fw-semibold">
+        Showing {{ records.length }} of {{ totalRecords }} setups
+      </small>
+      
+      <!-- Shared App Pagination -->
+      <app-pagination 
+        [currentPage]="currentPage" 
+        [totalPages]="totalPages" 
+        (pageChange)="onPageChange($event)">
+      </app-pagination>
+    </div>
+    
+  <!-- Child Modals -->
+  <app-new-modal [isOpen]="isNewOpen" (close)="isNewOpen = false" (saved)="loadGrid()"></app-new-modal>
+  <app-modify-modal [isOpen]="isModifyOpen" [record]="selectedRecord" (close)="isModifyOpen = false" (updated)="loadGrid()"></app-modify-modal>
+  <app-view-modal [isOpen]="isViewOpen" [record]="selectedRecord" (close)="isViewOpen = false" (modify)="openModify($event)"></app-view-modal>
+
+</div>

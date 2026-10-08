@@ -38,14 +38,18 @@ export class QuestionBankService {
   }
 
   
-  getAllQuestions(courseId?: string, courseNo?: number, questionNo?: number): Observable<TmsQuestionBank[]> {
-    let params = new HttpParams();
-    if (courseId) params = params.set('courseId', courseId);
-    if (courseNo) params = params.set('courseNo', courseNo.toString());
-    if (questionNo) params = params.set('questionNo', questionNo.toString());
+getAllQuestions(courseId?: string, courseNo?: number, questionNo?: number, page: number = 0, size: number = 5, status: string = 'ALL') {
+  let params = new HttpParams()
+    .set('page', page.toString())
+    .set('size', size.toString())
+    .set('status', status);
 
-    return this.http.get<TmsQuestionBank[]>(`${this.baseUrl}/questions`, { params });
-  }
+  if (courseId) params = params.set('courseId', courseId);
+  if (courseNo) params = params.set('courseNo', courseNo.toString());
+  if (questionNo) params = params.set('questionNo', questionNo.toString());
+
+  return this.http.get<any>(`${this.baseUrl}/questions`, { params });
+}
 
   
   addQuestion(question: TmsQuestionBank): Observable<TmsQuestionBank> {

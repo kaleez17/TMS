@@ -12,7 +12,7 @@
           <label class="form-label small fw-semibold text-secondary mb-1">Course ID *</label>
           <select class="form-select form-select-sm" [(ngModel)]="newForm.courseId" (change)="onCourseChange()">
             <option value="">Select Course</option>
-            <option *ngFor="let c of courses" [value]="c.id">{{ c.id }} - {{ c.tech }}</option>
+            <option *ngFor="let c of courses" [value]="c.id">{{ c.id }}  {{ c.tech }}</option>
           </select>
         </div>
 
@@ -21,7 +21,7 @@
           <select class="form-select form-select-sm" [class.is-invalid]="errors['topic']" [(ngModel)]="newForm.topic" (change)="onTopicChange()">
             <option value="">Select Topic</option>
             <option *ngFor="let cd of courseDetails" [value]="cd.tech">
-              {{ cd.tech }} (C.No: {{ cd.courseDetId }})
+              {{ cd.tech }} 
             </option>
           </select>
           <div *ngIf="errors['topic']" class="field-error-popup">⚠️ {{ errors['topic'] }}</div>

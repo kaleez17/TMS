@@ -1,0 +1,251 @@
+/* Solid Blurred Dark Backdrop */
+.runner-backdrop {
+  background-color: rgba(15, 23, 42, 0.75) !important;
+  backdrop-filter: blur(6px) !important;
+  z-index: 1055 !important;
+}
+
+.runner-dialog {
+  max-width: 760px;
+}
+
+.runner-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+/* Linear Top Progress Bar */
+.runner-progress-wrapper {
+  height: 4px;
+  width: 100%;
+  background: #f1f5f9;
+}
+
+.runner-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
+  transition: width 0.3s ease;
+}
+
+/* Header Section */
+.runner-header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.badge-test-seq {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1d4ed8;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 8px;
+}
+
+.runner-heading {
+  font-weight: 700;
+  color: #0f172a;
+  font-size: 1.1rem;
+}
+
+.level-tag {
+  background-color: #ecfeff;
+  border: 1px solid #a5f3fc;
+  color: #0891b2;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+}
+
+.sub-text {
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+/* Live Timer Box */
+.timer-box {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  padding: 0.35rem 0.75rem;
+  border-radius: 10px;
+}
+
+.timer-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.timer-title {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: 0.05em;
+}
+
+.timer-digits {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: 0.02em;
+}
+
+.timer-box.timer-urgent {
+  background-color: #fef2f2;
+  border-color: #fca5a5;
+  color: #dc2626;
+  animation: pulse 1s infinite;
+}
+
+.timer-urgent .timer-digits {
+  color: #dc2626;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+.btn-close-action {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  padding: 0.45rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-close-action:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+/* Warning Strip */
+.warning-strip {
+  background-color: #fef2f2;
+  border-bottom: 1px solid #fecaca;
+}
+
+.warning-text {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #b91c1c;
+}
+
+/* Question Header & Body */
+.question-tracker {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #2563eb;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.type-pill {
+  background-color: #f1f5f9;
+  color: #475569;
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  border: 1px solid #e2e8f0;
+}
+
+.question-content-box {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.question-heading {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.5;
+}
+
+.q-index {
+  color: #2563eb;
+  font-weight: 700;
+}
+
+/* =========================================
+   Option Cards (Replaces standard grey button)
+   ========================================= */
+.options-container {
+  width: 100%;
+}
+
+.option-row-card {
+  display: flex !important;
+  align-items: center !important;
+  text-align: left !important;
+  width: 100% !important;
+  padding: 0.85rem 1.15rem !important;
+  background-color: #ffffff !important;
+  border: 1.5px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease-in-out !important;
+  outline: none !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
+
+.option-row-card:hover:not(:disabled) {
+  border-color: #93c5fd !important;
+  background-color: #f8fafc !important;
+  transform: translateY(-1px);
+}
+
+.option-letter-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background-color: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border-radius: 8px;
+  margin-right: 1rem;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.option-text {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #1e293b;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+/* Selected State */
+.option-row-card.option-selected {
+  border-color: #2563eb !important;
+  background-color: #eff6ff !important;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
+}
+
+.option-row-card.option-selected .option-letter-badge {
+  background-color: #2563eb;
+  border-color: #1d4ed8;
+  color: #ffffff;
+}
+
+.option-row-card.option-selected .option-text {
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+.option-row-card:disabled {
+  opacity: 0.7;
+  cursor: not-allowed !important;
+}

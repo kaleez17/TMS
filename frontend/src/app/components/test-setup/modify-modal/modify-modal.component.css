@@ -1,0 +1,67 @@
+.modal-backdrop {
+  z-index: 1040;
+  background-color: rgba(15, 23, 42, 0.6);
+}
+
+.modal {
+  z-index: 1050;
+}
+
+.smaller {
+  font-size: 0.78rem;
+}
+
+.tracking-wide {
+  letter-spacing: 0.04em;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.detail-label {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.detail-value {
+  text-align: right;
+}
+
+.badge-status {
+  padding: 3px 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border-radius: 50rem;
+}
+
+.badge-active {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.badge-inactive {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+@media (min-width: 768px) {
+  .border-end-md {
+    border-right: 1px solid #e2e8f0;
+  }
+}
+.modal-dialog.modal-lg {
+  max-width: 800px;
+  width: 100%;
+}
+
+.modal-content {
+  border-radius: 8px;
+}
+
+.form-label {
+  margin-bottom: 4px;
+}

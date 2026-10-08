@@ -1,0 +1,178 @@
+.test-setup-container {
+  background-color: #f8fafc;
+  min-height: 100vh;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+.filter-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.filter-select,
+.filter-input {
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  font-size: 0.88rem;
+  padding: 6px 12px;
+  background-color: #f8fafc;
+}
+
+.btn-add-new {
+  background: #1d4ed8;
+  border: none;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+.btn-add-new:hover {
+  background: #1e40af;
+}
+
+/* Question Bank Exact Navy Header Row */
+.qb-header-row {
+  background-color: #1e293b !important;
+  font-size: 0.75rem;
+  letter-spacing: 0.6px;
+}
+
+/* Exact Column Width Grid Layout */
+.col-tno       { width: 6%; }
+.col-student   { width: 22%; }
+.col-date      { width: 11%; }
+.col-course    { width: 8%; }
+.col-tech      { width: 16%; }
+.col-level     { width: 8%; }
+.col-evaluator { width: 11%; }
+.col-status    { width: 11%; }
+.col-action    { width: 7%; }
+
+.qb-row {
+  transition: background-color 0.15s ease-in-out;
+}
+.qb-row:hover {
+  background-color: #f8fafc;
+}
+
+.header-status-btn {
+  font-size: 0.75rem;
+  padding: 3px 10px;
+}
+
+.hover-item:hover {
+  background-color: #f1f5f9;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+.dot-active { background-color: #16a34a; }
+.dot-inactive { background-color: #dc2626; }
+.dot-all { background-color: #64748b; }
+
+.course-badge {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  font-size: 0.78rem;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.topic-badge {
+  background-color: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+  font-size: 0.78rem;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.level-badge {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.status-pill {
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.status-pill-active {
+  background-color: #dcfce7;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+.status-pill-inactive {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.btn-action-view {
+  background-color: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  transition: all 0.15s ease;
+}
+.btn-action-view:hover {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+/* PrimeNG Custom Paginator Style */
+.custom-paginator-wrap ::ng-deep .p-paginator {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+.custom-paginator-wrap ::ng-deep .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+  background: #1d4ed8 !important;
+  color: #ffffff !important;
+  border-radius: 6px;
+  min-width: 32px;
+  height: 32px;
+  font-weight: 700;
+}
+
+.custom-paginator-wrap ::ng-deep .p-paginator .p-paginator-page,
+.custom-paginator-wrap ::ng-deep .p-paginator .p-paginator-first,
+.custom-paginator-wrap ::ng-deep .p-paginator .p-paginator-prev,
+.custom-paginator-wrap ::ng-deep .p-paginator .p-paginator-next,
+.custom-paginator-wrap ::ng-deep .p-paginator .p-paginator-last {
+  min-width: 32px;
+  height: 32px;
+  margin: 0 3px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  font-size: 0.85rem;
+  transition: all 0.15s ease;
+}
+
+.custom-paginator-wrap ::ng-deep .p-paginator .p-paginator-page:not(.p-highlight):hover,
+.custom-paginator-wrap ::ng-deep .p-paginator .p-link:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}

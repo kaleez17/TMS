@@ -141,12 +141,29 @@ export const routes: Routes = [
       import('./components/student-detail-form/student-detail-form.component').then(m => m.StudentDetailFormComponent),
     title: 'Student Daily Activity – Form'
   },
-    {
+  
+  {
     path: 'question-bank',
-    canActivate: [authGuard],
+    canActivate: [authGuard,screenGuard('QBNK')],
     loadComponent: () =>
       import('./components/question-bank/question-bank').then(m => m.QuestionBankComponent),
     title: 'Question Bank'
+  },
+  {
+    path: 'test-setup',
+    canActivate: [authGuard, screenGuard('TSET')],
+    loadComponent: () => 
+      import('./components/test-setup/test-setup.component')
+        .then(m => m.TestSetupComponent),
+    title: 'TMS - Test Setup Management' 
+  },
+  {
+    path: 'test-execution',
+    canActivate: [authGuard, screenGuard('EXAM')],
+    loadComponent: () => 
+      import('./components/test-execution/test-execution.component')
+        .then(m => m.TestExecutionComponent),
+    title: 'TMS - Test Execution'
   },
 
 

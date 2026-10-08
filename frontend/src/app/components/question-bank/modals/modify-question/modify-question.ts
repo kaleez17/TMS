@@ -13,129 +13,82 @@ import { TmsQuestionBank } from '../../../../models/question';
 })
 export class ModifyQuestionComponent implements OnInit {
   @Input() question: any = null;
-
   @Input() set courseList(val: any[]) {
-    this._courseList = Array.isArray(val)
-      ? val.map(item => (typeof item === 'string' ? item : item.courseId || item.id || item.cId || Object.values(item)[0] || '')).filter(Boolean)
-      : [];
+    this._courseList = Array.isArray(val) ? val.map(i => typeof i === 'string' ? i : (i.courseId || i.id || i.cId || Object.values(i)[0] || '')).filter(Boolean) : [];
   }
-  get courseList(): string[] {
-    return this._courseList;
-  }
+  get courseList(): string[] { return this._courseList; }
   private _courseList: string[] = [];
 
   @Output() close = new EventEmitter<void>();
   @Output() save = new EventEmitter<TmsQuestionBank>();
 
-  editForm: any = {};
-  courseDetList: any[] = [];
-  courseNumbers: number[] = [];
-  levelList: number[] = [1, 2, 3];
-  errors: { [key: string]: string } = {};
+  editForm: any = {}; courseDetList: any[] = []; courseNumbers: number[] = [];
+  levelList = [1, 2, 3]; errors: { [key: string]: string } = {};
 
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
     if (!this.question) return;
-
+    const q = this.question;
     this.editForm = {
-      ...this.question,
-      optA: this.question.optA ?? this.question.opt1 ?? this.question.option1 ?? '',
-      optB: this.question.optB ?? this.question.opt2 ?? this.question.option2 ?? '',
-      optC: this.question.optC ?? this.question.opt3 ?? this.question.option3 ?? '',
-      optD: this.question.optD ?? this.question.opt4 ?? this.question.option4 ?? '',
-      ans: this.question.ans ?? this.question.answer ?? 'A',
-      levels: this.question.levels ?? 1,
-      scores: this.question.scores ?? 1
+      ...q,
+      optA: q.optA ?? q.opt1 ?? q.option1 ?? '', optB: q.optB ?? q.opt2 ?? q.option2 ?? '',
+      optC: q.optC ?? q.opt3 ?? q.option3 ?? '', optD: q.optD ?? q.opt4 ?? q.option4 ?? '',
+      ans: q.ans ?? q.answer ?? 'A', levels: q.levels ?? 1, scores: q.scores ?? 1
     };
-
-    if (this.editForm.courseId) {
-      this.fetchCourseDetails(this.editForm.courseId, false);
-    }
+    if (this.editForm.courseId) this.fetchCourseDetails(this.editForm.courseId, false);
   }
 
-  onCourseChange(newCourseId: string): void {
-    this.editForm.courseId = newCourseId;
-    this.fetchCourseDetails(newCourseId, true);
-  }
+  onCourseChange(newId: string): void { this.editForm.courseId = newId; this.fetchCourseDetails(newId, true); }
+  clearError = (f: string) => delete this.errors[f];
+  onClose = () => this.close.emit();
 
   onTopicChange(): void {
     delete this.errors['topic'];
-    const matched = this.courseDetList.find(d => (d.tech || d.topic) === this.editForm.topic);
-    if (matched) {
-      this.editForm.courseNo = matched.courseDetId ?? matched.courseNo ?? matched.id;
-    }
+    const m = this.courseDetList.find(d => (d.tech || d.topic) === this.editForm.topic);
+    if (m) this.editForm.courseNo = m.courseDetId ?? m.courseNo ?? m.id;
   }
 
   onCourseNoChange(): void {
-    const matched = this.courseDetList.find(d => Number(d.courseDetId ?? d.courseNo ?? d.id) === Number(this.editForm.courseNo));
-    if (matched) {
-      this.editForm.topic = matched.tech || matched.topic || '';
-    }
+    const m = this.courseDetList.find(d => Number(d.courseDetId ?? d.courseNo ?? d.id) === Number(this.editForm.courseNo));
+    if (m) this.editForm.topic = m.tech || m.topic || '';
   }
 
-  fetchCourseDetails(courseId: string, autoSelectFirst = false): void {
-    if (!courseId) return;
-
-    this.http.get<any[]>(`http://localhost:8080/api/courses/${courseId}/details`).subscribe({
-      next: (details = []) => {
-        this.courseDetList = details;
-        this.courseNumbers = details.map(d => d.courseDetId ?? d.courseNo ?? d.id).filter(n => n != null);
-
-        if (autoSelectFirst && details.length > 0) {
-          this.editForm.courseNo = details[0].courseDetId ?? details[0].courseNo ?? details[0].id;
-          this.editForm.topic = details[0].tech || details[0].topic || '';
-        } else {
-          this.onCourseNoChange();
-        }
+  fetchCourseDetails(cId: string, autoSelect = false): void {
+    if (!cId) return;
+    this.http.get<any[]>(`http://localhost:8080/api/courses/${cId}/details`).subscribe({
+      next: (d = []) => {
+        this.courseDetList = d;
+        this.courseNumbers = d.map(i => i.courseDetId ?? i.courseNo ?? i.id).filter(n => n != null);
+        if (autoSelect && d.length) {
+          this.editForm.courseNo = d[0].courseDetId ?? d[0].courseNo ?? d[0].id;
+          this.editForm.topic = d[0].tech || d[0].topic || '';
+        } else this.onCourseNoChange();
       },
-      error: () => {
-        this.courseDetList = [];
-        this.courseNumbers = [];
-      }
+      error: () => { this.courseDetList = []; this.courseNumbers = []; }
     });
-  }
-
-  clearError(field: string): void {
-    delete this.errors[field];
   }
 
   validate(): boolean {
     this.errors = {};
     const f = this.editForm;
-
     if (!f.topic?.toString().trim()) this.errors['topic'] = 'Topic is required';
     if (f.scores == null || Number(f.scores) <= 0) this.errors['scores'] = 'Score must be greater than 0';
     if (!f.question?.toString().trim()) this.errors['question'] = 'Question description cannot be empty';
-
-    if (!f.optA?.toString().trim()) this.errors['optA'] = 'Option A is required';
-    if (!f.optB?.toString().trim()) this.errors['optB'] = 'Option B is required';
-    if (!f.optC?.toString().trim()) this.errors['optC'] = 'Option C is required';
-    if (!f.optD?.toString().trim()) this.errors['optD'] = 'Option D is required';
-
+    ['optA', 'optB', 'optC', 'optD'].forEach((k, i) => {
+      if (!f[k]?.toString().trim()) this.errors[k] = `Option ${String.fromCharCode(65 + i)} is required`;
+    });
     return Object.keys(this.errors).length === 0;
   }
 
   onUpdate(): void {
     if (!this.validate()) return;
-
-    const payload = {
-      ...this.editForm,
-      question: this.editForm.question.trim(),
-      optA: this.editForm.optA.trim(),
-      optB: this.editForm.optB.trim(),
-      optC: this.editForm.optC.trim(),
-      optD: this.editForm.optD.trim(),
-      ans: this.editForm.ans,
-      levels: Number(this.editForm.levels),
-      scores: Number(this.editForm.scores),
-      delFlg: this.editForm.delFlg ? this.editForm.delFlg.toString().trim().toUpperCase() : 'A'
-    };
-
-    this.save.emit(payload);
-  }
-
-  onClose(): void {
-    this.close.emit();
+    const f = this.editForm;
+    this.save.emit({
+      ...f, question: f.question.trim(),
+      optA: f.optA.trim(), optB: f.optB.trim(), optC: f.optC.trim(), optD: f.optD.trim(),
+      ans: f.ans, levels: Number(f.levels), scores: Number(f.scores),
+      delFlg: (f.delFlg ? f.delFlg.toString().trim().toUpperCase() : 'A')
+    });
   }
 }

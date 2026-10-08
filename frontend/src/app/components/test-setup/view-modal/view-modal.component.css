@@ -1,0 +1,55 @@
+/* Meta Separate Boxes */
+.meta-box {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.meta-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.meta-val {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+/* 2x2 Details Grid */
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 576px) {
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.grid-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.card-icon {
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

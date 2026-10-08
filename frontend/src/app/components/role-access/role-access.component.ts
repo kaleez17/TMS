@@ -65,17 +65,6 @@ export class RoleAccessComponent implements OnInit {
       next: ({ roles, screens }) => {
         this.roles = roles;
 
-        // 1. Question Bank backend screens list-la irukannu check panrom
-        const hasQuestionBank = screens.some(s => s.code === 'QBNK' || s.code === 'QSTN');
-        if (!hasQuestionBank) {
-          // Backend-la innum record podalanaalum UI-la prompt aaga add aagidum
-          screens.push({
-            code: 'QBNK',
-            name: 'Question Bank',
-            group: 'QUESTION MANAGEMENT'
-          } as ScreenDefinition);
-        }
-
         this.screens = screens;
         this.groups = this.buildGroups(screens);
         this.selectedRole = roles.find(r => r.value !== 'ADMIN')?.value ?? roles[0]?.value ?? '';

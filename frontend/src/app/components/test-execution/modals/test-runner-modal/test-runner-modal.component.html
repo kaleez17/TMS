@@ -1,0 +1,142 @@
+<div class="modal fade show d-block runner-backdrop" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg runner-dialog">
+    <div class="modal-content runner-card border-0 shadow-lg rounded-4 overflow-hidden bg-white">
+      
+      <!-- Top Linear Progress Line -->
+      <div class="runner-progress-wrapper" *ngIf="!loading && questions.length > 0">
+        <div class="runner-progress-bar" [style.width.%]="progressPercentage"></div>
+      </div>
+
+      <!-- Header Section -->
+      <div class="runner-header px-4 py-3 d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-3">
+          <div class="badge-test-seq">#{{ testData.testNo }}</div>
+          <div>
+            <div class="d-flex align-items-center gap-2">
+              <h5 class="runner-heading m-0">{{ testData.courseId }} Assessment</h5>
+              <span class="level-tag">Level {{ testData.lvl || 1 }}</span>
+            </div>
+            <span class="sub-text">Course No: {{ testData.courseNo }} • Target Single Attempt</span>
+          </div>
+        </div>
+
+        <!-- Corner Controls: Timer + Clean Close -->
+        <div class="d-flex align-items-center gap-3">
+          <!-- Live Timer -->
+          <div class="timer-box d-flex align-items-center gap-2" [class.timer-urgent]="isTimeCritical">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/>
+              <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"/>
+            </svg>
+            <div class="timer-meta">
+              <span class="timer-title">REMAINING</span>
+              <span class="timer-digits">{{ formattedTime }}</span>
+            </div>
+          </div>
+
+          <!-- Close Action -->
+          <button type="button" class="btn-close-action" aria-label="Close" (click)="closeModal()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Warning Strip (Sleek Red Alert Banner) -->
+      <div *ngIf="showWarningBanner" class="warning-strip px-4 py-2 d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#dc2626" viewBox="0 0 16 16">
+            <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.15.15 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.2.2 0 0 1-.054.06.1.1 0 0 1-.066.017H1.146a.1.1 0 0 1-.066-.017.2.2 0 0 1-.054-.06.18.18 0 0 1 .002-.183L7.884 2.073a.15.15 0 0 1 .054-.057m1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767z"/>
+            <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z"/>
+          </svg>
+          <span class="warning-text">{{ warningMessage }}</span>
+        </div>
+        <button type="button" class="btn btn-sm btn-danger rounded-pill px-3 py-1 fw-semibold" (click)="resumeTest()">
+          Resume
+        </button>
+      </div>
+
+      <!-- Content Area -->
+      <div class="runner-body p-4 p-md-5">
+        
+        <!-- Loading State -->
+        <div *ngIf="loading" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p class="mt-3 text-muted fw-semibold">Loading questions securely...</p>
+        </div>
+
+        <!-- Question Body -->
+        <div *ngIf="!loading && questions.length > 0">
+          
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="question-tracker">Question {{ currentIndex + 1 }} of {{ questions.length }}</span>
+            <span class="type-pill">Single Select</span>
+          </div>
+
+          <div class="question-content-box mb-4 p-3 rounded-3">
+            <h5 class="question-heading m-0">
+              <span class="q-index me-2">{{ currentIndex + 1 }}.</span>
+              {{ questions[currentIndex]?.question }}
+            </h5>
+          </div>
+
+          <!-- Professional Modern Options List -->
+          <div class="options-container d-flex flex-column gap-3">
+            
+            <button type="button" 
+                    class="option-row-card" 
+                    [class.option-selected]="selectedOption === 'A'"
+                    [disabled]="submitting" 
+                    (click)="selectOptionAndAutoSubmit('A')">
+              <span class="option-letter-badge">A</span>
+              <span class="option-text">{{ questions[currentIndex]?.optA }}</span>
+            </button>
+
+            <button type="button" 
+                    class="option-row-card" 
+                    [class.option-selected]="selectedOption === 'B'"
+                    [disabled]="submitting" 
+                    (click)="selectOptionAndAutoSubmit('B')">
+              <span class="option-letter-badge">B</span>
+              <span class="option-text">{{ questions[currentIndex]?.optB }}</span>
+            </button>
+
+            <button type="button" 
+                    class="option-row-card" 
+                    [class.option-selected]="selectedOption === 'C'"
+                    [disabled]="submitting" 
+                    (click)="selectOptionAndAutoSubmit('C')">
+              <span class="option-letter-badge">C</span>
+              <span class="option-text">{{ questions[currentIndex]?.optC }}</span>
+            </button>
+
+            <button type="button" 
+                    class="option-row-card" 
+                    [class.option-selected]="selectedOption === 'D'"
+                    [disabled]="submitting" 
+                    (click)="selectOptionAndAutoSubmit('D')">
+              <span class="option-letter-badge">D</span>
+              <span class="option-text">{{ questions[currentIndex]?.optD }}</span>
+            </button>
+
+          </div>
+
+          <!-- Submitting Indicator -->
+          <div *ngIf="submitting" class="submitting-indicator mt-3 text-center">
+            <div class="spinner-border spinner-border-sm text-primary me-2"></div>
+            <span class="text-secondary small fw-medium">Saving answer and loading next question...</span>
+          </div>
+
+        </div>
+
+        <!-- No Questions State -->
+        <div *ngIf="!loading && questions.length === 0" class="text-center py-5">
+          <p class="text-danger fw-bold m-0">No questions found in question bank for this setup.</p>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
