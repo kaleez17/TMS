@@ -31,8 +31,6 @@
 .custom-status-menu { position: absolute; top: calc(100% + 4px); left: 0; z-index: 9999; background: #fff; border-radius: 8px; min-width: 160px; padding: 6px 0; margin: 0; list-style: none; border: 1px solid #e2e8f0; }
 .menu-item-btn { width: 100%; text-align: left; background: transparent; border: none; padding: 0.45rem 1rem; font-size: 0.8rem; color: #334155; display: flex; align-items: center; gap: 8px; cursor: pointer; }
 .menu-item-btn:hover, .menu-item-btn.active-item { background: #eff6ff; color: #1d4ed8; font-weight: 600; }
-.pagination-custom .page-link { border-radius: 6px; border: 1px solid #e2e8f0; color: #475569; font-size: 0.8rem; font-weight: 600; padding: 0.35rem 0.75rem; }
-.pagination-custom .page-item.active .page-link { background: #2563eb; border-color: #2563eb; color: #fff; }
 /* 1. Course ID Badge (Light Blue Background with Darker Blue Text) */
 .badge-course {
   background-color: #dbeafe !important; /* Soft light blue */

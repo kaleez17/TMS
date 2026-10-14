@@ -1,0 +1,73 @@
+/* ===== Filter card: every field same height, bottoms aligned ===== */
+.search-row { align-items: flex-end; gap: 16px; }
+
+.name-field { width: 300px; max-width: 100%; }
+.num-field  { width: 180px; max-width: 100%; }
+
+.name-field .search-input,
+.num-field .search-input {
+  width: 100%;
+  height: 40px;
+  box-sizing: border-box;
+}
+
+.clear-btn {
+  height: 40px;
+  padding: 0 22px;
+  box-sizing: border-box;
+}
+
+/* ===== Table: fixed layout so every column lines up and View is always visible ===== */
+.table-card .table-wrap {
+  height: auto;            /* override .grid-screen fixed height: no big empty gap */
+  min-height: 160px;
+  max-height: 480px;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+.table-card .data-table {
+  table-layout: fixed;
+  width: 100%;
+  min-width: 1180px;       /* below this the card scrolls sideways instead of squashing */
+}
+
+.data-table col.c-tno    { width: 7%; }
+.data-table col.c-sid    { width: 10%; }
+.data-table col.c-name   { width: 14%; }
+.data-table col.c-mobile { width: 10%; }
+.data-table col.c-date   { width: 9%; }
+.data-table col.c-course { width: 7%; }
+.data-table col.c-topic  { width: 14%; }
+.data-table col.c-level  { width: 6%; }
+.data-table col.c-eval   { width: 10%; }
+.data-table col.c-status { width: 7%; min-width: 110px; }
+.data-table col.c-action { width: 6%; min-width: 90px; }
+
+.data-table th,
+.data-table td {
+  padding: 11px 12px;
+  vertical-align: middle;
+}
+
+.ta-center { text-align: center !important; }
+
+.row-actions-center { justify-content: center; }
+
+/* ===== Status badge colours (base .status-badge comes from styles.css) ===== */
+.status-badge { white-space: nowrap; }
+
+.tr-completed { background: #e4f2ec; color: #2e7d5b; border: 1px solid #a7d7c0; }
+.tr-completed .status-dot { background: #2e7d5b; }
+
+.tr-scheduled { background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; }
+.tr-scheduled .status-dot { background: #2563eb; }
+
+.tr-blocked { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+.tr-blocked .status-dot { background: #dc2626; }
+
+.bottom-toolbar { justify-content: flex-end; }
+
+@media (max-width: 640px) {
+  .name-field, .num-field { width: 100%; }
+}

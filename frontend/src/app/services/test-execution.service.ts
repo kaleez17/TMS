@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { TestSetupItem, TestQuestion, TestAnswerSubmitPayload } from '../models/test-execution.model';
+import { TestSetupItem, TestQuestion, TestAnswerSubmitPayload, TestResultDetails } from '../models/test-execution.model';
 
 @Injectable({
   providedIn: 'root'
@@ -48,6 +48,26 @@ completeTest(studentNo: any, studentId: any, testNo: any, testDate: any): Observ
 
   return this.http.post(`${this.baseUrl}/complete-test`, null, { params });
 }
+lockTest(studentNo: any, studentId: any, testNo: any, testDate: any): Observable<any> {
+  const params = new HttpParams()
+    .set('studentNo', String(studentNo))
+    .set('studentId', String(studentId))
+    .set('testNo', String(testNo))
+    .set('testDate', String(testDate));
+
+  return this.http.post(`${this.baseUrl}/lock-test`, null, { params });
+}
+
+getTestDetails(studentNo: number, studentId: string, testNo: number, testDate: string): Observable<TestResultDetails> {
+  const params = new HttpParams()
+    .set('studentNo', studentNo.toString())
+    .set('studentId', studentId)
+    .set('testNo', testNo.toString())
+    .set('testDate', testDate);
+
+  return this.http.get<TestResultDetails>(`${this.baseUrl}/test-details`, { params });
+}
+
 getTestSummary(studentNo: number, studentId: string, testNo: number, testDate: string): Observable<any> {
   const params = new HttpParams()
     .set('studentNo', studentNo.toString())

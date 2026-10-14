@@ -26,9 +26,11 @@ export class ViewModalComponent {
     }
   }
 
-  // stat value "1" or 1 aana true, "0" or 0 aana false
-  get isTestCompleted(): boolean {
-    if (!this.record) return false;
-    return String(this.record.stat) === '1' || String(this.record.stat).toLowerCase() === 'true';
+  // stat: 0 = Scheduled, 1 = Completed, 2 = Locked
+  get testStatus(): 'Scheduled' | 'Completed' | 'Locked' {
+    const stat = String(this.record?.stat);
+    if (stat === '1') return 'Completed';
+    if (stat === '2') return 'Locked';
+    return 'Scheduled';
   }
 }

@@ -1,0 +1,159 @@
+<section class="screen dash-screen">
+
+  @if (selected; as sel) {
+    <!-- details table (after a card is clicked) -->
+
+    <div class="page-toolbar">
+      <div class="page-title-group">
+        <h2>{{ sel.title }} Report</h2>
+      </div>
+    </div>
+
+    <div class="card search-card">
+      <div class="search-row">
+        <div class="field name-field">
+          <label for="t-name">Student Name</label>
+          <input id="t-name" type="text" class="search-input" autocomplete="off"
+                 [(ngModel)]="searchName" (ngModelChange)="onFilterChange()"
+                 placeholder="Type name or student id…" />
+        </div>
+
+        <div class="field num-field">
+          <label for="t-num">Student Number</label>
+          <input id="t-num" type="number" min="1" class="mono search-input" autocomplete="off"
+                 [(ngModel)]="searchNumber" (ngModelChange)="onFilterChange()"
+                 placeholder="e.g. 1" />
+        </div>
+
+        <button class="btn btn-outline clear-btn" (click)="clearSearch()">Clear</button>
+      </div>
+    </div>
+
+    <div class="card table-card">
+      <div class="table-card-head">
+        <span class="table-label">{{ sel.title }}</span>
+        <span class="record-count">{{ records.length }} record(s)</span>
+      </div>
+
+      <div class="table-wrap">
+        <table class="data-table">
+          <colgroup>
+            <col class="c-tno" /><col class="c-sid" /><col class="c-name" /><col class="c-mobile" />
+            <col class="c-date" /><col class="c-course" /><col class="c-topic" /><col class="c-level" />
+            <col class="c-eval" /><col class="c-status" /><col class="c-action" />
+          </colgroup>
+          <thead>
+            <tr>
+              <th class="ta-center">Test No</th>
+              <th>Student ID</th>
+              <th>Name</th>
+              <th>Mobile</th>
+              <th>Test Date</th>
+              <th>Course</th>
+              <th>Topic</th>
+              <th class="ta-center">Level</th>
+              <th>Evaluator</th>
+              <th class="ta-center">Status</th>
+              <th class="ta-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of pagedRecords; track r.studentNo + '::' + r.studentId + '::' + r.testNo + '::' + r.testDate) {
+              <tr>
+                <td class="mono ta-center">#{{ r.testNo }}</td>
+                <td><span class="id-chip mono">{{ r.studentId }}-{{ r.studentNo }}</span></td>
+                <td [title]="r.studentName || ''">{{ r.studentName || '-' }}</td>
+                <td class="mono">{{ r.mobileNo || '-' }}</td>
+                <td class="mono">{{ r.testDate }}</td>
+                <td>{{ r.courseId }}</td>
+                <td [title]="r.topicName || ''">{{ r.topicName || '-' }}</td>
+                <td class="ta-center">Lvl {{ r.lvl }}</td>
+                <td [title]="r.evaluatorName || r.testConductedBy || ''">{{ r.evaluatorName || r.testConductedBy || '-' }}</td>
+                <td class="ta-center">
+                  <span class="status-badge" [ngClass]="'tr-' + statusOf(r).toLowerCase()">
+                    <span class="status-dot"></span>{{ statusOf(r) }}
+                  </span>
+                </td>
+                <td class="ta-center">
+                  <div class="row-actions row-actions-center">
+                    <button type="button" class="btn-styled-view" (click)="openView(r)">View</button>
+                  </div>
+                </td>
+              </tr>
+            }
+            @empty {
+              <tr>
+                <td colspan="11" class="empty-cell">
+                  @if (loadingDetails) { Loading… }
+                  @else { No records found for the given search criteria. }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (records.length > 0) {
+        <div class="pagination-bar">
+          <span class="pagination-info">Showing {{ rangeStart }}–{{ rangeEnd }} of {{ records.length }}</span>
+          <app-pagination [currentPage]="currentPage" [totalPages]="totalPages" (pageChange)="goToPage($event)"></app-pagination>
+        </div>
+      }
+    </div>
+
+    <div class="page-toolbar bottom-toolbar">
+      <button class="btn btn-ghost" (click)="onBack()">← Back</button>
+    </div>
+
+  } @else {
+    <!-- four cards -->
+
+    <div class="page-toolbar">
+      <div class="page-title-group">
+        <h2>Test Report Dash Board</h2>
+      </div>
+      <button class="btn btn-ghost" (click)="load()" [disabled]="loading">⟳ Refresh</button>
+    </div>
+
+    @if (loading && !summary) {
+      <div class="card dash-loading">Loading dash board…</div>
+    }
+
+    @if (summary) {
+      <div class="dash-section">
+        <div class="dash-section-head">
+          <h3>Test Dash Board <span class="dash-section-sub">Status wise</span></h3>
+          <span class="dash-section-hint">From Test Setup</span>
+        </div>
+        <div class="tile-grid">
+          @for (tile of tiles; track tile.category) {
+            <div
+              class="dash-tile dash-tile-clickable"
+              [style.--tile-color]="tile.color"
+              [style.--tile-soft]="tile.colorSoft"
+              role="button"
+              tabindex="0"
+              (click)="onTileClick(tile)"
+              (keyup.enter)="onTileClick(tile)">
+              <span class="dash-tile-value">{{ tile.value }}</span>
+              <span class="dash-tile-title">{{ tile.title }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+  }
+
+  <!-- View popup: same details screen as Test Execution, driven by the DB status -->
+  @if (viewItem) {
+    <app-test-view-modal
+      [testData]="viewItem"
+      [allowUnlock]="true"
+      [unlocking]="unlocking"
+      (unlock)="onUnlock()"
+      (closeModal)="closeView()">
+    </app-test-view-modal>
+  }
+
+</section>

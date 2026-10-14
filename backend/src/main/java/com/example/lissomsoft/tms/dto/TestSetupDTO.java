@@ -24,6 +24,7 @@ public class TestSetupDTO {
     private String entryBy;
     private LocalDate entryDate;
     private String delFlag;
+    private Long lockRemainingSeconds;   // only while stat = 2 (Locked): seconds left, always 0..86400 (24h)
 
     private String studyMode;       // Offline / Online
     private String assignedStaff;   // Trainer name

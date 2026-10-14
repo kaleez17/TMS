@@ -1,7 +1,8 @@
 import { Component, Input, Output, EventEmitter, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { TestExecutionService } from '../../../../services/test-execution.service';
-import { TestSetupItem } from '../../../../models/test-execution.model';
+import { TestSetupItem, TestQuestionResult, TestResultDetails } from '../../../../models/test-execution.model';
+import { formatLockRemaining } from '../../../../models/lock-time.util';
 
 @Component({
   selector: 'app-test-view-modal',
@@ -17,8 +18,19 @@ export class TestViewModalComponent implements OnInit {
   @Input({ required: true }) testData!: TestSetupItem;
   @Output() closeModal = new EventEmitter<void>();
 
+  // Used by the admin Test Report Dashboard only (the student screen leaves these off)
+  @Input() allowUnlock = false;
+  @Input() unlocking = false;
+  @Output() unlock = new EventEmitter<void>();
+
   summary: any = null;
   loading: boolean = true;
+
+  // "View More" (Completed tests): question-wise answers + score
+  showDetails = false;
+  details: TestResultDetails | null = null;
+  detailsLoading = false;
+  detailsError = '';
 
   ngOnInit(): void {
     const sNo = Number(this.testData?.studentNo ?? 0);
@@ -49,6 +61,61 @@ export class TestViewModalComponent implements OnInit {
 
   get isCompleted(): boolean {
     return String(this.testData?.stat) === '1' || String(this.testData?.stat).toLowerCase() === 'completed';
+  }
+
+  // stat 2 = Locked (saved in the database)
+  get isLocked(): boolean {
+    return String(this.testData?.stat) === '2';
+  }
+
+  // Time left before the server auto-unlocks (never more than 24h)
+  get unlockIn(): string {
+    return formatLockRemaining(this.testData?.lockRemainingSeconds);
+  }
+
+  /** View More: load every question with the answer given, the correct answer and the score. */
+  openDetails(): void {
+    this.showDetails = true;
+    if (this.details) return;   // already loaded
+
+    this.detailsLoading = true;
+    this.detailsError = '';
+    this.testService.getTestDetails(
+      Number(this.testData?.studentNo ?? 0),
+      String(this.testData?.studentId ?? ''),
+      Number(this.testData?.testNo ?? 0),
+      String(this.testData?.testDate ?? '')
+    ).subscribe({
+      next: (res) => {
+        this.details = res;
+        this.detailsLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.detailsError = 'Unable to load the question details.';
+        this.detailsLoading = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  backToSummary(): void {
+    this.showDetails = false;
+  }
+
+  /** Option text for a letter, e.g. optionText(row, 'B') */
+  optionText(q: TestQuestionResult, letter: string | null): string {
+    switch ((letter || '').toUpperCase()) {
+      case 'A': return q.optA || '';
+      case 'B': return q.optB || '';
+      case 'C': return q.optC || '';
+      case 'D': return q.optD || '';
+      default:  return '';
+    }
+  }
+
+  onUnlock(): void {
+    this.unlock.emit();
   }
 
   getTopicTitle(): string {

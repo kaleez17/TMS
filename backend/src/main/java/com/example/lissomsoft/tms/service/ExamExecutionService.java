@@ -2,6 +2,8 @@ package com.example.lissomsoft.tms.service;
 
 import com.example.lissomsoft.tms.dto.ExamAnswerSubmitDTO;
 import com.example.lissomsoft.tms.dto.ExamQuestionDTO;
+import com.example.lissomsoft.tms.dto.TestQuestionResultDTO;
+import com.example.lissomsoft.tms.dto.TestResultDetailsDTO;
 import com.example.lissomsoft.tms.dto.TestResultSummaryDTO;
 import com.example.lissomsoft.tms.dto.TestSetupDTO;
 import com.example.lissomsoft.tms.entity.*;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -75,6 +78,9 @@ public class ExamExecutionService {
                     dto.setTestConductedBy(t.getTestConductedBy());
                     dto.setExecutedDate(t.getExecutedDate());
                     dto.setStat(t.getStat());
+                    if ("2".equals(t.getStat())) {
+                        dto.setLockRemainingSeconds(TestLockService.remainingSeconds(t.getLockedAt()));
+                    }
 
                     // Additional fields from StudentMaster:
                     dto.setStudyMode(studyMode);
@@ -233,15 +239,17 @@ public class ExamExecutionService {
         int totalAssigned = (setup != null && setup.getNoOfQuestions() != null) ? setup.getNoOfQuestions() : records.size();
         if (totalAssigned == 0) totalAssigned = 10;
 
-        // Attended: studAns null illama empty illama irukura count
-        int attendedCount = (int) records.stream()
+        // Attended = rows where the student really submitted an answer
+        List<TestExecHdr> attended = records.stream()
                 .filter(r -> r.getStudAns() != null && !r.getStudAns().trim().isEmpty())
-                .count();
+                .toList();
+        int attendedCount = attended.size();
 
-        // Score total
-        int score = records.stream()
-                .mapToInt(r -> r.getScore() != null ? r.getScore() : 0)
-                .sum();
+        // Score = 1 for every attended question whose answer equals the correct answer
+        int score = (int) attended.stream()
+                .filter(r -> r.getCorrectAns() != null
+                        && r.getStudAns().trim().equalsIgnoreCase(r.getCorrectAns().trim()))
+                .count();
 
         double percentage = (totalAssigned > 0) ? Math.round(((double) score / totalAssigned) * 100.0) : 0.0;
         String status = (percentage >= 60.0) ? "PASSED" : "NEEDS IMPROVEMENT";
@@ -259,5 +267,66 @@ public class ExamExecutionService {
                 percentage,
                 status
         );
+    }
+
+    /**
+     * Question-wise result of one test, built only from the database:
+     *  - test_exec_hdr      : the student's answer + the correct answer saved with it
+     *  - tms_question_bank  : question text and options
+     *
+     * Each row shows the original Q.No from the Question Bank.
+     * Only ATTENDED questions are returned: rows where the student really submitted an answer.
+     * (Rows with an empty stud_ans are the unattempted questions that finalizeExam() inserts with score 0.)
+     * Score per question = 1 when the student's answer equals the correct answer, otherwise 0.
+     */
+    @Transactional(readOnly = true)
+    public TestResultDetailsDTO getTestResultDetails(Integer studentNo, String studentId, Integer testNo, LocalDate testDate) {
+        List<TestExecHdr> records = testExecHdrRepository.findByStudentNoAndStudentIdAndTestNoAndTestDate(
+                studentNo, studentId, testNo, testDate);
+
+        // attended questions only (a real submitted answer), in question order
+        List<TestExecHdr> attendedRows = records.stream()
+                .filter(r -> r.getStudAns() != null && !r.getStudAns().isBlank())
+                .sorted((a, b) -> a.getQuestionNo().compareTo(b.getQuestionNo()))
+                .toList();
+
+        // Q.No comes from the Question Bank row
+        List<TestQuestionResultDTO> rows = IntStream.range(0, attendedRows.size())
+                .mapToObj(i -> {
+                    TestExecHdr r = attendedRows.get(i);
+                    TmsQuestionBank q = questionBankRepository
+                            .findById(new TmsQuestionBankId(r.getCourseId(), r.getCourseNo(), r.getQuestionNo()))
+                            .orElse(null);
+
+                    String studAns = r.getStudAns().trim().toUpperCase();
+
+                    // correct answer saved with the attempt; fall back to the question bank if it is empty
+                    String correct = (r.getCorrectAns() != null && !r.getCorrectAns().isBlank())
+                            ? r.getCorrectAns()
+                            : (q != null && q.getAns() != null ? q.getAns() : "");
+                    correct = correct.trim().toUpperCase();
+
+                    int score = studAns.equals(correct) ? 1 : 0;
+
+                    return new TestQuestionResultDTO(
+                            q != null ? q.getQuestionNo() : r.getQuestionNo(),
+                            q != null ? q.getQuestion() : "(question not found)",
+                            q != null ? q.getOptA() : null,
+                            q != null ? q.getOptB() : null,
+                            q != null ? q.getOptC() : null,
+                            q != null ? q.getOptD() : null,
+                            studAns,
+                            correct,
+                            score);
+                })
+                .toList();
+
+        int totalScore = rows.stream().mapToInt(TestQuestionResultDTO::score).sum();
+
+        TestSetup setup = testSetupRepository
+                .findById(new TestSetupId(studentNo, studentId, testNo, testDate)).orElse(null);
+        int assigned = (setup != null && setup.getNoOfQuestions() != null) ? setup.getNoOfQuestions() : records.size();
+
+        return new TestResultDetailsDTO(assigned, rows.size(), totalScore, rows);
     }
 }

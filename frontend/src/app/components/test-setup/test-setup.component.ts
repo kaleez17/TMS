@@ -6,7 +6,7 @@ import { TestSetupDTO, CourseDetDTO } from '../../models/test-setup.model';
 import { NewModalComponent } from './new-modal/new-modal.component';
 import { ModifyModalComponent } from './modify-modal/modify-modal.component';
 import { ViewModalComponent } from './view-modal/view-modal.component';
-import { PaginationComponent } from '../pagination/pagination.component'; 
+import { PaginationComponent } from '../pagination/pagination.component';
 
 @Component({
   selector: 'app-test-setup',
@@ -57,7 +57,6 @@ export class TestSetupComponent implements OnInit {
       error: () => (this.courses = [])
     });
   }
-  // Student name type pannumbodhu filter trigger aagum
   onStudentSearchChange(): void {
     this.currentPage = 1; // Page 1-ku reset
     this.loadGrid();
@@ -80,7 +79,6 @@ export class TestSetupComponent implements OnInit {
         next: (res) => {
           let list = res.content || [];
 
-          // Student Name / Student ID filter
           if (this.searchStudentQuery && isNaN(Number(this.searchStudentQuery))) {
             const query = this.searchStudentQuery.toLowerCase().trim();
             list = list.filter(
@@ -101,7 +99,7 @@ export class TestSetupComponent implements OnInit {
         }
       });
   }
-  // PaginationComponent emit pannumbothu trigger aagum
+
   onPageChange(newPage: number): void {
     this.currentPage = newPage;
     this.loadGrid();

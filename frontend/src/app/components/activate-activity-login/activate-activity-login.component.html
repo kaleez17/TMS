@@ -1,0 +1,186 @@
+<div class="activity-container p-4">
+
+  <!-- Top Bar: Title + Refresh (same pattern as Test Setup filter bar) -->
+  <div class="bg-white p-3 rounded-3 shadow-sm mb-3 border d-flex justify-content-between align-items-center">
+    <div>
+      <label class="form-label text-muted small fw-bold text-uppercase mb-1">Activity Log</label>
+      <h2 class="page-title mb-0">Activity Log Details</h2>
+    </div>
+
+    <div>
+      <button
+        type="button"
+        class="btn btn-primary fw-semibold px-4 py-2 shadow-sm rounded-2"
+        (click)="loadActivityLogs()">
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <p *ngIf="loading" class="message">
+    <span class="spinner-border spinner-border-sm me-2 text-primary"></span>
+    Loading activity logs...
+  </p>
+
+  <p *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </p>
+
+  <!-- Question Bank Style Card -->
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white mb-4" *ngIf="!loading && !errorMessage">
+
+    <div class="table-scroll">
+      <table class="qb-table">
+        <thead>
+          <tr class="qb-header-row">
+            <th>User Name</th>
+            <th>Role</th>
+            <th>Login Date &amp; Time</th>
+            <th>Login Status</th>
+            <th>Logout Date &amp; Time</th>
+            <th class="text-end">View</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr class="qb-row" *ngFor="let log of paginatedActivityLogs">
+            <td class="fw-bold text-dark">{{ log.userName }}</td>
+
+            <td class="text-secondary fw-semibold">{{ log.role || '-' }}</td>
+
+            <td class="text-secondary fw-semibold">
+              {{
+                log.loginDateTime
+                  ? (log.loginDateTime | date:'dd-MM-yyyy hh:mm:ss a')
+                  : ''
+              }}
+            </td>
+
+            <td>
+              <span
+                class="badge status-pill"
+                [ngClass]="{
+                  'status-pill-success': log.loginStatus === 'Success',
+                  'status-pill-failed': log.loginStatus === 'Failed' || log.loginStatus === 'Locked',
+                  'status-pill-neutral': log.loginStatus !== 'Success' && log.loginStatus !== 'Failed' && log.loginStatus !== 'Locked'
+                }">
+                ● {{ log.loginStatus || '-' }}
+              </span>
+            </td>
+
+            <td class="text-secondary fw-semibold">
+              {{
+                log.logoutDateTime
+                  ? (log.logoutDateTime | date:'dd-MM-yyyy hh:mm:ss a')
+                  : ''
+              }}
+            </td>
+
+            <td class="text-end">
+              <button
+                type="button"
+                class="btn btn-action-view d-inline-flex align-items-center gap-1"
+                title="View Activity Info"
+                (click)="viewActivity(log)">
+
+                <svg
+                  class="eye-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true">
+                  <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+
+                <span>View</span>
+              </button>
+            </td>
+          </tr>
+
+          <tr *ngIf="activityLogs.length === 0">
+            <td colspan="6" class="no-data">
+              No activity logs found
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Footer with Shared Pagination Component -->
+    <div
+      class="d-flex justify-content-between align-items-center px-4 py-3 bg-white border-top"
+      *ngIf="activityLogs.length > 0">
+      <small class="text-muted fw-semibold">
+        Showing {{ paginatedActivityLogs.length }} of {{ activityLogs.length }} logs
+      </small>
+
+      <app-pagination
+        [currentPage]="currentPage"
+        [totalPages]="totalPages"
+        (pageChange)="onPageChange($event)">
+      </app-pagination>
+    </div>
+  </div>
+
+</div>
+
+<!-- Activity Info Popup -->
+<div
+  class="modal-overlay"
+  *ngIf="showActivityInfo"
+  (click)="closeActivityInfo()">
+
+  <div
+    class="modal-box"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="activity-modal-title"
+    (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <div>
+        <h3 id="activity-modal-title">Activity Info</h3>
+        <p class="modal-subtitle">
+          Details recorded for this activity
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="modal-close"
+        aria-label="Close"
+        (click)="closeActivityInfo()">
+        &times;
+      </button>
+    </div>
+
+    <div class="modal-body">
+
+      <div
+        class="activity-card"
+        *ngFor="let group of selectedActivityGroups; let i = index">
+
+        <div class="activity-card-title">
+          Activity {{ i + 1 }}
+        </div>
+
+        <div class="activity-field" *ngFor="let field of group">
+          <div class="field-label">{{ field.label }}</div>
+          <div class="field-value">{{ field.value }}</div>
+        </div>
+
+      </div>
+
+      <div
+        class="empty-activity"
+        *ngIf="selectedActivityGroups.length === 0">
+        null
+      </div>
+
+    </div>
+  </div>
+</div>

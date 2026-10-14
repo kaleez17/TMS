@@ -1,5 +1,6 @@
 package com.example.lissomsoft.tms.repository;
 
+import com.example.lissomsoft.tms.dto.ActivityLogResponse;
 import com.example.lissomsoft.tms.entity.ActivityLog;
 import com.example.lissomsoft.tms.entity.ActivityLogId;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,4 +26,13 @@ public interface ActivityLogRepository extends JpaRepository<ActivityLog, Activi
     // Dynamic user mapping-kaga added
     @Query("SELECT a FROM ActivityLog a WHERE LOWER(TRIM(a.userName)) = LOWER(TRIM(:userName)) ORDER BY a.loginDateTime DESC")
     List<ActivityLog> findByUserNameOrderByLoginDateTimeDesc(@Param("userName") String userName);
+
+    @Query("SELECT new com.example.lissomsoft.tms.dto.ActivityLogResponse(" +
+            "a.userName, u.role, a.loginDateTime, a.loginStatus, " +
+            "a.logoutDateTime, a.activityInfo) " +
+            "FROM ActivityLog a LEFT JOIN User u " +
+            "ON a.userId = u.userId AND a.userNo = u.userNo " +
+            "ORDER BY a.loginDateTime DESC")
+
+    List<ActivityLogResponse> findAllActivityLogs();
 }

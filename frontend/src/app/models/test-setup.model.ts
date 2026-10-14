@@ -12,7 +12,8 @@ export interface TestSetupDTO {
   testConductedBy: string;
   evaluatorName?: string;
   executedDate?: string;
-  stat?: string;
+  stat?: string;      // 0 = Scheduled, 1 = Completed, 2 = Locked
+  lockRemainingSeconds?: number;  // only while stat = 2: seconds left (0..86400), calculated by the server
   entryBy?: string;
   entryDate?: string;
   delFlag: string;

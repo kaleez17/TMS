@@ -133,11 +133,12 @@
     <small class="text-muted">
       Showing {{ paginatedQuestions.length }} of {{ totalRecords }} questions
     </small>
-      <ul class="pagination pagination-custom mb-0 gap-1">
-        <li class="page-item" [class.disabled]="currentPage === 1"><button class="page-link" (click)="setPage(currentPage - 1)">Previous</button></li>
-        <li class="page-item active"><span class="page-link">{{ currentPage }}</span></li>
-        <li class="page-item" [class.disabled]="currentPage === totalPages"><button class="page-link" (click)="setPage(currentPage + 1)">Next</button></li>
-      </ul>
+      <!-- Shared App Pagination -->
+      <app-pagination
+        [currentPage]="currentPage"
+        [totalPages]="totalPages"
+        (pageChange)="setPage($event)">
+      </app-pagination>
     </div>
   </div>
 

@@ -141,7 +141,7 @@
           </tr>
 
           <!-- Data Rows -->
-          <tr *ngFor="let item of filteredTests" [class.locked-row]="isLocked(item)" [class.completed-row]="isCompleted(item)">
+          <tr *ngFor="let item of pagedTests" [class.locked-row]="isLocked(item)" [class.completed-row]="isCompleted(item)">
             <td class="ps-4">
               <span class="seq-pill">#{{ item.testNo }}</span>
             </td>
@@ -226,6 +226,20 @@
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- Footer with Shared Pagination Component -->
+    <div class="d-flex justify-content-between align-items-center px-4 py-3 bg-white border-top">
+      <small class="text-muted fw-semibold">
+        Showing {{ paginator.rangeStart }}–{{ paginator.rangeEnd }} of {{ filteredTests.length }} assessments
+      </small>
+
+      <!-- Shared App Pagination -->
+      <app-pagination
+        [currentPage]="paginator.currentPage"
+        [totalPages]="paginator.totalPages"
+        (pageChange)="onPageChange($event)">
+      </app-pagination>
     </div>
   </div>
 

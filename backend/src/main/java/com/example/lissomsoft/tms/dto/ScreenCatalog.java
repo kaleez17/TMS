@@ -19,9 +19,12 @@ public final class ScreenCatalog {
             new ScreenDefinition("RPTS", "Student Information Report",        "Reports"),
             new ScreenDefinition("RPTA", "Student Activity Dashboard Report", "Reports"),
             new ScreenDefinition("RPTD", "Student Daily Activity Report",     "Reports"),
+            new ScreenDefinition("ACTL", "Activity Login",     "Reports"),
+
             new ScreenDefinition("QBNK", "Question Bank",                     "Question Management"),
             new ScreenDefinition("TSET", "Test Setup",                        "Question Management"),
             new ScreenDefinition("EXAM", "Test Execution",                        "Question Management"),
+            new ScreenDefinition("TRPT", "Test Report Dashboard",             "Question Management"),
             new ScreenDefinition("USRM", "User Maintenance",                  "Administration"),
             new ScreenDefinition("MYAC", "My Daily Activity",                 "My Activity")
 

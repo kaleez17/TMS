@@ -117,11 +117,23 @@
         }
       </div>
       }
+      @if (auth.isAdmin() || roleAccess.canAccess('ACTL')) {
+  <a routerLink="/activity-log" 
+     [routerLinkActiveOptions]="{exact:false}" 
+     routerLinkActive="active" 
+     class="nav-item" 
+     [title]="sidebarCollapsed ? 'Activity Log' : ''">
+    <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
+      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+    </svg>
+    <span class="nav-label">Activity Log</span>
+  </a>
+}
      
                             <!-- Question Management Group Section -->
 
 
-@if (auth.isAdmin() || roleAccess.canAccess('QBNK') || roleAccess.canAccess('TSET')) {
+@if (auth.isAdmin() || roleAccess.canAccess('QBNK') || roleAccess.canAccess('TSET') || roleAccess.canAccess('TRPT')) {
 <div class="nav-group">
   <div class="nav-group-title">Question Management</div>
   
@@ -150,8 +162,8 @@
     <span class="nav-label">Test Setup</span>
   </a>
   }
-</div>
-}
+
+
 @if (auth.isStudent() || roleAccess.canAccess('EXAM')) {
         <a routerLink="/test-execution" [routerLinkActiveOptions]="{exact:false}" routerLinkActive="active" class="nav-item" [title]="sidebarCollapsed ? 'Test Execution' : ''">
           <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
@@ -162,6 +174,20 @@
         </a>
         }
 
+        @if (auth.isAdmin() || roleAccess.canAccess('TRPT')) {
+  <a routerLink="/test-report"
+     [routerLinkActiveOptions]="{exact:false}"
+     routerLinkActive="active"
+     class="nav-item"
+     [title]="sidebarCollapsed ? 'Test Report Dashboard' : ''">
+    <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
+      <path d="M3 13a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1H4a1 1 0 01-1-1v-4zM8 9a1 1 0 011-1h2a1 1 0 011 1v8a1 1 0 01-1 1H9a1 1 0 01-1-1V9zM14 5a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V5z"/>
+    </svg>
+    <span class="nav-label">Test Report Dashboard</span>
+  </a>
+  }
+</div>
+}
 
       @if (auth.isAdmin()) {
         <div class="nav-group">

@@ -2,10 +2,12 @@ package com.example.lissomsoft.tms.controller;
 
 import com.example.lissomsoft.tms.dto.ExamAnswerSubmitDTO;
 import com.example.lissomsoft.tms.dto.ExamQuestionDTO;
+import com.example.lissomsoft.tms.dto.TestResultDetailsDTO;
 import com.example.lissomsoft.tms.dto.TestResultSummaryDTO;
 import com.example.lissomsoft.tms.dto.TestSetupDTO;
 import com.example.lissomsoft.tms.security.AuthenticatedPrincipal;
 import com.example.lissomsoft.tms.service.ExamExecutionService;
+import com.example.lissomsoft.tms.service.TestLockService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
@@ -20,6 +22,7 @@ import java.util.List;
 public class ExamExecutionController {
 
     private final ExamExecutionService service;
+    private final TestLockService lockService;
 
     @GetMapping("/my-tests")
     public List<TestSetupDTO> getMyTests(Authentication authentication) {
@@ -29,6 +32,7 @@ public class ExamExecutionController {
         } else if (authentication != null) {
             username = authentication.getName();
         }
+        lockService.releaseExpiredLocks();   // a lock older than 24h is already Scheduled
         return service.getTestsForStudent(username);
     }
 
@@ -52,6 +56,16 @@ public class ExamExecutionController {
         return service.getTestResultSummary(studentNo, studentId, testNo, testDate);
     }
 
+    // "View More" on a Completed test: every question, the answer given, the correct answer and the score
+    @GetMapping("/test-details")
+    public TestResultDetailsDTO getTestDetails(
+            @RequestParam Integer studentNo,
+            @RequestParam String studentId,
+            @RequestParam Integer testNo,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate testDate) {
+        return service.getTestResultDetails(studentNo, studentId, testNo, testDate);
+    }
+
     @PostMapping("/submit-answer")
     public void submitSingleAnswer(@RequestBody ExamAnswerSubmitDTO dto, Authentication authentication) {
         String username = "admin";
@@ -70,6 +84,16 @@ public class ExamExecutionController {
             @RequestParam Integer testNo,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate testDate) {
         service.clearPartialAttempt(studentNo, studentId, testNo, testDate);
+    }
+
+    // Called when the student reaches the tab-switch limit: stat -> 2 (Locked) for 24 hours
+    @PostMapping("/lock-test")
+    public void lockTest(
+            @RequestParam Integer studentNo,
+            @RequestParam String studentId,
+            @RequestParam Integer testNo,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate testDate) {
+        lockService.lock(studentNo, studentId, testNo, testDate);
     }
 
     @PostMapping("/complete-test")

@@ -1,2 +1,106 @@
 .hover-bg:hover { background-color: #f1f5f9; }
 .cursor-pointer { cursor: pointer; }
+
+/* ===== Theme: same navy / blue look as the rest of the application ===== */
+.new-backdrop {
+  background-color: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 1055;
+}
+
+/* Dark navy header (matches the Assessment Configuration Details popup) */
+.modal-header-custom {
+  background-color: #1e293b;
+  border-bottom: 2px solid #0f172a;
+}
+
+.badge-seq-dark {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.header-title { letter-spacing: -0.01em; font-size: 1.05rem; }
+.header-subtitle { color: #94a3b8; font-size: 0.78rem; }
+
+.btn-close-custom {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-close-custom:hover { background: rgba(255, 255, 255, 0.1); color: #ffffff; }
+
+/* Body + field labels */
+.new-body { background-color: #ffffff; }
+
+.field-label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Candidate strip = same look as the field cards */
+.field-card-box {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+/* Inputs */
+.themed-input {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #1e293b;
+  background-color: #ffffff;
+}
+
+.themed-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.themed-readonly {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.themed-addon {
+  background-color: #f8fafc;
+  border: 1px solid #cbd5e1;
+  color: #64748b;
+  border-radius: 8px 0 0 8px;
+}
+
+/* Footer */
+.status-active { color: #15803d; }
+
+.btn-save {
+  background-color: #2563eb;
+  border: none;
+  color: #ffffff;
+  font-size: 0.85rem;
+  padding: 0.45rem 1.5rem;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.25);
+  transition: all 0.18s ease;
+}
+
+.btn-save:hover:not(:disabled) { background-color: #1d4ed8; }
+.btn-save:disabled { opacity: 0.6; cursor: not-allowed; }

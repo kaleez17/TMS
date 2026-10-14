@@ -18,7 +18,8 @@ export interface TestSetupItem {
   executedDate?: string;
   timePerTest: number;
   timeTakenSeconds:number;
-  stat?: number; // 0: Pending/Scheduled, 1: Attended/Completed
+  stat?: number | string; // 0: Scheduled, 1: Completed, 2: Locked
+  lockRemainingSeconds?: number;  // only while stat = 2: seconds left (0..86400), calculated by the server
   score?: number;
 
   studyMode?: string;
@@ -48,4 +49,23 @@ export interface TestAnswerSubmitPayload {
   courseNo: number;
   selectedAns: string;
   timeTakenSeconds: number;
+}
+/** One attended question of a completed test ("View More") */
+export interface TestQuestionResult {
+  questionNo: number;   // Q.No: original number in the Question Bank
+  question: string;
+  optA?: string;
+  optB?: string;
+  optC?: string;
+  optD?: string;
+  studentAnswer: string;          // A / B / C / D (attended questions only)
+  correctAnswer: string;
+  score: number;                  // 1 = correct, 0 = wrong / not answered
+}
+
+export interface TestResultDetails {
+  totalAssigned: number;    // questions assigned in the test setup
+  totalAttended: number;    // questions the student answered
+  totalScore: number;       // sum of per-question scores
+  questions: TestQuestionResult[];   // attended questions only
 }

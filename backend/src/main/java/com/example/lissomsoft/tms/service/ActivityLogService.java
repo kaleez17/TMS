@@ -1,6 +1,7 @@
 package com.example.lissomsoft.tms.service;
 
 import com.example.lissomsoft.tms.audit.ActivityDiffUtil;
+import com.example.lissomsoft.tms.dto.ActivityLogResponse;
 import com.example.lissomsoft.tms.entity.ActivityLog;
 import com.example.lissomsoft.tms.repository.ActivityLogRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -123,5 +125,9 @@ public class ActivityLogService {
                     log.setLogoutDateTime(now());
                     activityLogRepository.save(log);
                 });
+    }
+
+    public List<ActivityLogResponse> getAllActivityLogs() {
+        return activityLogRepository.findAllActivityLogs();
     }
 }

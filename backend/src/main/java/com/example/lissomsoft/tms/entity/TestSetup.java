@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "test_setup")
@@ -68,4 +69,8 @@ public class TestSetup {
 
     @Column(name = "del_flag")
     private String delFlag;
+
+    // When stat became '2' (Locked). Used to auto-release the lock after 24 hours.
+    @Column(name = "locked_at")
+    private LocalDateTime lockedAt;
 }

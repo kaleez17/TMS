@@ -141,6 +141,13 @@ export const routes: Routes = [
       import('./components/student-detail-form/student-detail-form.component').then(m => m.StudentDetailFormComponent),
     title: 'Student Daily Activity – Form'
   },
+  {
+  path: 'activity-log',
+  canActivate: [authGuard, screenGuard('ACTL'), adminGuard],
+  loadComponent: () =>
+    import('./components/activate-activity-login/activate-activity-login.component').then(m => m.ActivateActivityLoginComponent),
+  title: 'Activity Log – TMS'
+},
   
   {
     path: 'question-bank',
@@ -156,6 +163,14 @@ export const routes: Routes = [
       import('./components/test-setup/test-setup.component')
         .then(m => m.TestSetupComponent),
     title: 'TMS - Test Setup Management' 
+  },
+  {
+    path: 'test-report',
+    canActivate: [authGuard, screenGuard('TRPT')],
+    loadComponent: () =>
+      import('./components/test-report-dashboard/test-report-dashboard.component')
+        .then(m => m.TestReportDashboardComponent),
+    title: 'Test Report Dash Board'
   },
   {
     path: 'test-execution',

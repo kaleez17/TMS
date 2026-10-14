@@ -37,13 +37,9 @@ export class TestRunnerModalComponent implements OnInit, OnDestroy {
   isTimeCritical: boolean = false;
 
   ngOnInit(): void {
-    const sNo = Number(this.testData?.studentNo ?? 0);
-    const tNo = Number(this.testData?.testNo ?? 0);
-    const tDate = String(this.testData?.testDate ?? '');
-
-    const lockKey = `test_locked_${sNo}_${tNo}_${tDate}`;
-    if (localStorage.getItem(lockKey)) {
-      this.toast.error('You have exceeded tab switch limits. This test is locked for today!');
+    // Locked tests (stat = 2) cannot be started
+    if (String(this.testData?.stat) === '2') {
+      this.toast.error('You have exceeded tab switch limits. This test is locked for 24 hours!');
       this.testCancelled.emit();
       return;
     }
@@ -66,12 +62,14 @@ export class TestRunnerModalComponent implements OnInit, OnDestroy {
     const tDate = String(this.testData?.testDate ?? '');
 
     if (this.tabSwitchCount >= this.maxWarnings) {
-      const lockKey = `test_locked_${sNo}_${tNo}_${tDate}`;
-      localStorage.setItem(lockKey, Date.now().toString());
       this.stopTimer();
       this.testService.resetAttempt(sNo, sId, tNo, tDate).subscribe();
-      this.toast.error('Violation limit reached (3/3). Exam cancelled and locked for today!');
-      this.testCancelled.emit();
+      this.toast.error('Violation limit reached (3/3). Exam cancelled and locked for 24 hours!');
+      // Save the lock in the database (stat = 2); the list reloads after this call finishes
+      this.testService.lockTest(sNo, sId, tNo, tDate).subscribe({
+        next: () => this.testCancelled.emit(),
+        error: () => this.testCancelled.emit()
+      });
     } else {
       this.warningMessage = `Tab Switch Warning (${this.tabSwitchCount}/${this.maxWarnings}): Do not switch tabs or minimize window!`;
       this.showWarningBanner = true;

@@ -7,11 +7,12 @@ import { TmsQuestionBank } from '../../models/question';
 import { ViewQuestionComponent } from './modals/view-question/view-question';
 import { ModifyQuestionComponent } from './modals/modify-question/modify-question';
 import { NewQuestionComponent } from './modals/new-question/new-question';
+import { PaginationComponent } from '../pagination/pagination.component';
 
 @Component({
   selector: 'app-question-bank',
   standalone: true,
-  imports: [CommonModule, FormsModule, ViewQuestionComponent, ModifyQuestionComponent, NewQuestionComponent],
+  imports: [CommonModule, FormsModule, ViewQuestionComponent, ModifyQuestionComponent, NewQuestionComponent, PaginationComponent],
   templateUrl: './question-bank.html',
   styleUrls: ['./question-bank.css']
 })

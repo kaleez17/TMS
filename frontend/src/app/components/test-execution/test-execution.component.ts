@@ -6,11 +6,14 @@ import { TestSetupItem } from '../../models/test-execution.model';
 import { ToastService } from '../../services/toast.service';
 import { TestViewModalComponent } from './modals/test-view-modal/test-view-modal.component';
 import { TestRunnerModalComponent } from './modals/test-runner-modal/test-runner-modal.component';
+import { formatLockRemaining } from '../../models/lock-time.util';
+import { Paginator } from '../../services/paginator';
+import { PaginationComponent } from '../pagination/pagination.component';
 
 @Component({
   selector: 'app-test-execution',
   standalone: true,
-  imports: [CommonModule, FormsModule, TestViewModalComponent, TestRunnerModalComponent],
+  imports: [CommonModule, FormsModule, TestViewModalComponent, TestRunnerModalComponent, PaginationComponent],
   templateUrl: './test-execution.component.html',
   styleUrls: ['./test-execution.component.css']
 })
@@ -20,6 +23,9 @@ export class TestExecutionComponent implements OnInit {
   private readonly cdr = inject(ChangeDetectorRef);
 
   allTests: TestSetupItem[] = [];
+
+  // Client-side paging over the (status-filtered) list
+  readonly paginator = new Paginator<TestSetupItem>(() => this.filteredTests, 5);
   loading: boolean = false;
   selectedStatusFilter: string = 'ALL';
   isStatusDropdownOpen: boolean = false;
@@ -37,8 +43,6 @@ export class TestExecutionComponent implements OnInit {
   activeViewTest: TestSetupItem | null = null;
   activeRunnerTest: TestSetupItem | null = null;
 
-  private readonly LOCK_DURATION_MS = 24 * 60 * 60 * 1000;
-
   ngOnInit(): void {
     setTimeout(() => {
       this.loadAssessments();
@@ -52,6 +56,10 @@ export class TestExecutionComponent implements OnInit {
     this.testService.getMyTests().subscribe({
       next: (res: TestSetupItem[]) => {
         this.allTests = res || [];
+        // keep the current page, but never beyond the last page after a reload
+        if (this.paginator.currentPage > this.paginator.totalPages) {
+          this.paginator.currentPage = this.paginator.totalPages;
+        }
 
         if (this.allTests.length > 0) {
           const first = this.allTests[0];
@@ -96,6 +104,7 @@ toggleStatusDropdown(event: MouseEvent): void {
 selectStatusFilter(status: string, event: MouseEvent): void {
   event.stopPropagation();
   this.selectedStatusFilter = status;
+  this.paginator.reset();   // new filter -> back to page 1
   this.isStatusDropdownOpen = false;
 }
 
@@ -108,42 +117,13 @@ onDocumentClick(event: MouseEvent): void {
   }
 }
 
-  getLockKey(test: TestSetupItem): string {
-    const sNo = Number(test?.studentNo ?? 0);
-    const tNo = Number(test?.testNo ?? 0);
-    const tDate = String(test?.testDate ?? '');
-    return `test_locked_${sNo}_${tNo}_${tDate}`;
-  }
-
+  // Locked status is stored in the database (stat = 2) and released by the server after 24 hours
   isLocked(test: TestSetupItem): boolean {
-    const lockKey = this.getLockKey(test);
-    const lockTimeStr = localStorage.getItem(lockKey);
-    if (!lockTimeStr) return false;
-
-    const lockTime = Number(lockTimeStr);
-    const now = Date.now();
-
-    if (now - lockTime >= this.LOCK_DURATION_MS) {
-      localStorage.removeItem(lockKey);
-      return false;
-    }
-    return true;
+    return String(test.stat) === '2';
   }
 
   getRemainingLockTime(test: TestSetupItem): string {
-    const lockKey = this.getLockKey(test);
-    const lockTimeStr = localStorage.getItem(lockKey);
-    if (!lockTimeStr) return '24h';
-
-    const lockTime = Number(lockTimeStr);
-    const elapsed = Date.now() - lockTime;
-    const remainingMs = Math.max(0, this.LOCK_DURATION_MS - elapsed);
-
-    const hours = Math.floor(remainingMs / (1000 * 60 * 60));
-    const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
-
-    if (hours === 0 && minutes === 0) return 'less than a minute';
-    return `${hours}h ${minutes}m`;
+    return formatLockRemaining(test.lockRemainingSeconds);
   }
 
   isCompleted(test: TestSetupItem): boolean {
@@ -169,6 +149,14 @@ onDocumentClick(event: MouseEvent): void {
       return this.allTests.filter(t => this.isLocked(t));
     }
     return this.allTests;
+  }
+
+  get pagedTests(): TestSetupItem[] {
+    return this.paginator.paged;
+  }
+
+  onPageChange(page: number): void {
+    this.paginator.goToPage(page);
   }
 
   openViewModal(test: TestSetupItem): void {
